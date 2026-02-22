@@ -1,4 +1,4 @@
-import { Home, Dumbbell, Salad, Calculator, Brain } from "lucide-react";
+import { Home, Dumbbell, Salad, Calculator, TrendingUp } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -7,7 +7,7 @@ const navItems = [
   { path: "/treinos", icon: Dumbbell, label: "Treinos" },
   { path: "/dietas", icon: Salad, label: "Dietas" },
   { path: "/ferramentas", icon: Calculator, label: "Tools" },
-  { path: "/mentalidade", icon: Brain, label: "Mente" },
+  { path: "/evolucao", icon: TrendingUp, label: "Evolução" },
 ];
 
 const BottomNav = () => {
