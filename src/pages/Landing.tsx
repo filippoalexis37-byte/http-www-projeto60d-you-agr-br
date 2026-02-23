@@ -62,18 +62,9 @@ const Landing = () => {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button
                 size="lg"
-                onClick={() => navigate("/auth")}
                 className="gradient-primary px-8 py-6 text-lg font-bold text-primary-foreground box-glow"
               >
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-5 w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => navigate("/auth?mode=login")}
-                className="border-primary/30 px-8 py-6 text-lg"
-              >
-                JÁ TENHO CONTA
               </Button>
             </div>
           </motion.div>
@@ -163,7 +154,6 @@ const Landing = () => {
           </p>
           <Button
             size="lg"
-            onClick={() => navigate("/auth")}
             className="mt-6 w-full gradient-primary py-6 text-lg font-bold text-primary-foreground"
           >
             QUERO TRANSFORMAR MEU CORPO
