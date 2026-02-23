@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Check, Dumbbell } from "lucide-react";
+import { ChevronDown, Check, Dumbbell, Play } from "lucide-react";
 import { workoutPlans, type Workout } from "@/data/workouts";
 
 const Workouts = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>("iniciante");
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const plan = workoutPlans.find((p) => p.id === selectedLevel)!;
 
@@ -97,38 +98,63 @@ const Workouts = () => {
                         const key = `${workout.id}-${i}`;
                         const done = completedExercises.has(key);
                         return (
-                          <button
-                            key={i}
-                            onClick={() => toggleExercise(key)}
-                            className={`flex w-full items-center gap-3 rounded-lg p-3 transition-all ${
-                              done ? "bg-primary/10" : "bg-secondary/50"
-                            }`}
-                          >
-                            <div
-                              className={`flex h-6 w-6 items-center justify-center rounded-md border transition-all ${
-                                done
-                                  ? "border-primary bg-primary"
-                                  : "border-muted-foreground/30"
+                          <div key={i} className="space-y-1">
+                            <button
+                              onClick={() => toggleExercise(key)}
+                              className={`flex w-full items-center gap-3 rounded-lg p-3 transition-all ${
+                                done ? "bg-primary/10" : "bg-secondary/50"
                               }`}
                             >
-                              {done && <Check className="h-4 w-4 text-primary-foreground" />}
-                            </div>
-                            <div className="flex-1 text-left">
-                              <p className={`text-sm font-medium ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                                {ex.name}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-xs font-semibold text-primary">
-                                {ex.sets}x{ex.reps}
-                              </p>
-                              {ex.rest && ex.rest !== "-" && (
-                                <p className="text-[10px] text-muted-foreground">
-                                  Descanso: {ex.rest}
+                              <div
+                                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition-all ${
+                                  done
+                                    ? "border-primary bg-primary"
+                                    : "border-muted-foreground/30"
+                                }`}
+                              >
+                                {done && <Check className="h-4 w-4 text-primary-foreground" />}
+                              </div>
+                              <div className="flex-1 text-left">
+                                <p className={`text-sm font-medium ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                                  {ex.name}
                                 </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xs font-semibold text-primary">
+                                  {ex.sets}x{ex.reps}
+                                </p>
+                                {ex.rest && ex.rest !== "-" && (
+                                  <p className="text-[10px] text-muted-foreground">
+                                    Descanso: {ex.rest}
+                                  </p>
+                                )}
+                              </div>
+                              {ex.videoUrl && (
+                                <div
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPlayingVideo(playingVideo === key ? null : key);
+                                  }}
+                                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+                                >
+                                  <Play className="h-4 w-4" />
+                                </div>
                               )}
-                            </div>
-                          </button>
+                            </button>
+                            {playingVideo === key && ex.videoUrl && (
+                              <div className="overflow-hidden rounded-lg">
+                                <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                                  <iframe
+                                    src={ex.videoUrl}
+                                    title={ex.name}
+                                    className="absolute inset-0 h-full w-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         );
                       })}
                     </div>
