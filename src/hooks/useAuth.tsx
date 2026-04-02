@@ -43,6 +43,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setIsAdmin(rolesRes.data?.some((r: any) => r.role === "admin") ?? false);
     setIsApproved(profileRes.data?.is_approved ?? false);
+
+    // Check subscription
+    try {
+      const { data: subData } = await supabase.functions.invoke("check-subscription");
+      setIsSubscribed(subData?.subscribed ?? false);
+      setSubscriptionEnd(subData?.subscription_end ?? null);
+    } catch {
+      setIsSubscribed(false);
+    }
   };
 
   useEffect(() => {
