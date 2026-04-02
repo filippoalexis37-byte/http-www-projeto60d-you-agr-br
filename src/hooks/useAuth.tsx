@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   isApproved: boolean;
+  isSubscribed: boolean;
+  subscriptionEnd: string | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -16,6 +18,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   isAdmin: false,
   isApproved: false,
+  isSubscribed: false,
+  subscriptionEnd: null,
   loading: true,
   signOut: async () => {},
 });
@@ -27,6 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkUserStatus = async (userId: string) => {
@@ -37,6 +43,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setIsAdmin(rolesRes.data?.some((r: any) => r.role === "admin") ?? false);
     setIsApproved(profileRes.data?.is_approved ?? false);
+
+    // Check subscription
+    try {
+      const { data: subData } = await supabase.functions.invoke("check-subscription");
+      setIsSubscribed(subData?.subscribed ?? false);
+      setSubscriptionEnd(subData?.subscription_end ?? null);
+    } catch {
+      setIsSubscribed(false);
+    }
   };
 
   useEffect(() => {
@@ -49,6 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setIsAdmin(false);
           setIsApproved(false);
+          setIsSubscribed(false);
+          setSubscriptionEnd(null);
         }
         setLoading(false);
       }
@@ -71,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, isSubscribed, subscriptionEnd, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

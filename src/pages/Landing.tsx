@@ -1,10 +1,15 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
   Star, Zap, Brain, Clock, Shield, Users, TrendingUp, Award,
-  Calendar, Heart, BarChart3
+  Calendar, Heart, BarChart3, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-fitness.jpg";
 
 const benefits = [
@@ -62,6 +67,30 @@ const faqs = [
 ];
 
 const Landing = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast({ title: "Erro", description: "Não foi possível iniciar o pagamento.", variant: "destructive" });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Hero */}
@@ -105,12 +134,15 @@ const Landing = () => {
             <div className="mt-8">
               <Button
                 size="lg"
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
                 className="gradient-primary px-10 py-7 text-xl font-bold text-primary-foreground box-glow"
               >
+                {checkoutLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                🔒 7 dias grátis · Cancele quando quiser
+                💳 R$ 29,90/mês · Cancele quando quiser
               </p>
             </div>
           </motion.div>
@@ -369,19 +401,27 @@ const Landing = () => {
           </p>
 
           <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Shield className="h-4 w-4 text-primary" /> 7 dias grátis</span>
+            <span className="flex items-center gap-1"><Shield className="h-4 w-4 text-primary" /> Pagamento seguro</span>
             <span className="flex items-center gap-1"><Calendar className="h-4 w-4 text-primary" /> 60 dias</span>
             <span className="flex items-center gap-1"><Users className="h-4 w-4 text-primary" /> Suporte</span>
           </div>
 
+          <div className="mt-6 rounded-xl border border-primary/40 bg-primary/5 p-4">
+            <p className="text-xs text-muted-foreground line-through">De R$ 97,00/mês</p>
+            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 29,90<span className="text-lg text-muted-foreground">/mês</span></p>
+          </div>
+
           <Button
             size="lg"
+            onClick={handleCheckout}
+            disabled={checkoutLoading}
             className="mt-8 w-full gradient-primary py-7 text-xl font-bold text-primary-foreground box-glow"
           >
+            {checkoutLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
             QUERO TRANSFORMAR MEU CORPO
           </Button>
           <p className="mt-3 text-xs text-muted-foreground">
-            🔒 Pagamento seguro · Cancele quando quiser
+            🔒 Pagamento seguro via Stripe · Cancele quando quiser
           </p>
         </motion.div>
       </section>
