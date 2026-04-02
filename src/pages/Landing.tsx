@@ -134,12 +134,15 @@ const Landing = () => {
             <div className="mt-8">
               <Button
                 size="lg"
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
                 className="gradient-primary px-10 py-7 text-xl font-bold text-primary-foreground box-glow"
               >
+                {checkoutLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                🔒 7 dias grátis · Cancele quando quiser
+                💳 R$ 29,90/mês · Cancele quando quiser
               </p>
             </div>
           </motion.div>
