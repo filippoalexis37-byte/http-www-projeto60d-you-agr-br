@@ -67,6 +67,30 @@ const faqs = [
 ];
 
 const Landing = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast({ title: "Erro", description: "Não foi possível iniciar o pagamento.", variant: "destructive" });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Hero */}
