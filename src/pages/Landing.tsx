@@ -142,7 +142,7 @@ const Landing = () => {
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                💳 R$ 29,90/mês · Cancele quando quiser
+                🎁 7 dias grátis · Depois R$ 29,90/mês · Cancele quando quiser
               </p>
             </div>
           </motion.div>
