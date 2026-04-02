@@ -1,10 +1,15 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
   Star, Zap, Brain, Clock, Shield, Users, TrendingUp, Award,
-  Calendar, Heart, BarChart3
+  Calendar, Heart, BarChart3, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-fitness.jpg";
 
 const benefits = [
