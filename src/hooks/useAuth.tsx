@@ -41,16 +41,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       supabase.from("profiles").select("is_approved").eq("user_id", userId).single(),
     ]);
 
-    setIsAdmin(rolesRes.data?.some((r: any) => r.role === "admin") ?? false);
+    const userIsAdmin = rolesRes.data?.some((r: any) => r.role === "admin") ?? false;
+    setIsAdmin(userIsAdmin);
     setIsApproved(profileRes.data?.is_approved ?? false);
 
-    // Check subscription
-    try {
-      const { data: subData } = await supabase.functions.invoke("check-subscription");
-      setIsSubscribed(subData?.subscribed ?? false);
-      setSubscriptionEnd(subData?.subscription_end ?? null);
-    } catch {
-      setIsSubscribed(false);
+    // Admins get automatic premium access
+    if (userIsAdmin) {
+      setIsSubscribed(true);
+      setSubscriptionEnd(null);
+    } else {
+      // Check subscription for regular users
+      try {
+        const { data: subData } = await supabase.functions.invoke("check-subscription");
+        setIsSubscribed(subData?.subscribed ?? false);
+        setSubscriptionEnd(subData?.subscription_end ?? null);
+      } catch {
+        setIsSubscribed(false);
+      }
     }
   };
 

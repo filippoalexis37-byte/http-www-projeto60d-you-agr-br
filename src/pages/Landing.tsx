@@ -142,7 +142,7 @@ const Landing = () => {
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                💳 R$ 29,90/mês · Cancele quando quiser
+                🎁 7 dias grátis · Depois R$ 29,90/mês · Cancele quando quiser
               </p>
             </div>
           </motion.div>
@@ -407,8 +407,10 @@ const Landing = () => {
           </div>
 
           <div className="mt-6 rounded-xl border border-primary/40 bg-primary/5 p-4">
-            <p className="text-xs text-muted-foreground line-through">De R$ 97,00/mês</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">🎁 7 dias grátis para testar</p>
+            <p className="text-xs text-muted-foreground line-through mt-1">De R$ 97,00/mês</p>
             <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 29,90<span className="text-lg text-muted-foreground">/mês</span></p>
+            <p className="mt-1 text-xs text-muted-foreground">Após o período de teste gratuito</p>
           </div>
 
           <Button
@@ -418,10 +420,10 @@ const Landing = () => {
             className="mt-8 w-full gradient-primary py-7 text-xl font-bold text-primary-foreground box-glow"
           >
             {checkoutLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
-            QUERO TRANSFORMAR MEU CORPO
+            TESTAR 7 DIAS GRÁTIS
           </Button>
           <p className="mt-3 text-xs text-muted-foreground">
-            🔒 Pagamento seguro via Stripe · Cancele quando quiser
+            🔒 Pagamento seguro · Cancele antes dos 7 dias e não paga nada
           </p>
         </motion.div>
       </section>
