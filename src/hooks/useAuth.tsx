@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   isApproved: boolean;
+  isSubscribed: boolean;
+  subscriptionEnd: string | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
