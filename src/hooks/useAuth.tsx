@@ -64,6 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setIsAdmin(false);
           setIsApproved(false);
+          setIsSubscribed(false);
+          setSubscriptionEnd(null);
         }
         setLoading(false);
       }
