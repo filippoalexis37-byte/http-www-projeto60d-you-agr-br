@@ -401,19 +401,27 @@ const Landing = () => {
           </p>
 
           <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Shield className="h-4 w-4 text-primary" /> 7 dias grátis</span>
+            <span className="flex items-center gap-1"><Shield className="h-4 w-4 text-primary" /> Pagamento seguro</span>
             <span className="flex items-center gap-1"><Calendar className="h-4 w-4 text-primary" /> 60 dias</span>
             <span className="flex items-center gap-1"><Users className="h-4 w-4 text-primary" /> Suporte</span>
           </div>
 
+          <div className="mt-6 rounded-xl border border-primary/40 bg-primary/5 p-4">
+            <p className="text-xs text-muted-foreground line-through">De R$ 97,00/mês</p>
+            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 29,90<span className="text-lg text-muted-foreground">/mês</span></p>
+          </div>
+
           <Button
             size="lg"
+            onClick={handleCheckout}
+            disabled={checkoutLoading}
             className="mt-8 w-full gradient-primary py-7 text-xl font-bold text-primary-foreground box-glow"
           >
+            {checkoutLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
             QUERO TRANSFORMAR MEU CORPO
           </Button>
           <p className="mt-3 text-xs text-muted-foreground">
-            🔒 Pagamento seguro · Cancele quando quiser
+            🔒 Pagamento seguro via Stripe · Cancele quando quiser
           </p>
         </motion.div>
       </section>
