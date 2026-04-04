@@ -16,12 +16,12 @@ const Diets = () => {
       </h1>
 
       {/* Diet selector */}
-      <div className="mt-6 flex gap-2">
+      <div className="mt-6 flex flex-wrap gap-2">
         {dietPlans.map((d) => (
           <button
             key={d.id}
             onClick={() => setSelectedDiet(d.id)}
-            className={`flex-1 rounded-lg px-3 py-3 text-sm font-semibold transition-all ${
+            className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-all ${
               selectedDiet === d.id
                 ? d.color === "primary"
                   ? "gradient-primary text-primary-foreground"
