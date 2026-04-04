@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
   Star, Zap, Brain, Clock, Shield, Users, TrendingUp, Award,
-  Calendar, Heart, BarChart3, Loader2
+  Calendar, Heart, BarChart3, Loader2, LogOut, Settings, LogIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -67,7 +67,7 @@ const faqs = [
 ];
 
 const Landing = () => {
-  const { user } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -93,6 +93,57 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden">
+      {/* Top Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-3">
+          <p className="font-display text-lg text-foreground">
+            PROJETO <span className="text-primary">60D</span>
+          </p>
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate("/admin")}
+                    className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Admin
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate("/")}
+                  className="gap-1.5"
+                >
+                  Entrar no App
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={signOut}
+                  className="gap-1.5 text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate("/auth")}
+                className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <LogIn className="h-4 w-4" />
+                Entrar
+              </Button>
+            )}
+          </div>
+        </div>
+      </nav>
       {/* Hero */}
       <div className="relative min-h-screen overflow-hidden">
         <img
