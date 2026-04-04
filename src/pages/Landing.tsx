@@ -67,7 +67,7 @@ const faqs = [
 ];
 
 const Landing = () => {
-  const { user } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
