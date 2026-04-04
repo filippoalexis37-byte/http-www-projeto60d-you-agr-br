@@ -15,7 +15,7 @@ export interface Workout {
 
 export interface WorkoutPlan {
   id: string;
-  level: "iniciante" | "avancado";
+  level: "iniciante" | "intermediario" | "avancado";
   title: string;
   description: string;
   frequency: string;
@@ -28,7 +28,7 @@ export const workoutPlans: WorkoutPlan[] = [
     level: "iniciante",
     title: "Treino Iniciante",
     description: "Primeiro 30 dias – Divisão ABC",
-    frequency: "3-5x por semana",
+    frequency: "3x por semana",
     workouts: [
       {
         id: "ini-a",
@@ -49,6 +49,7 @@ export const workoutPlans: WorkoutPlan[] = [
         exercises: [
           { name: "Puxada Aberta", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/CAwf7n6Luuc" },
           { name: "Remada Baixa", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/GZbfZ033f74" },
+          { name: "Puxada Fechada", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/an1BMInTXLk" },
           { name: "Rosca Direta", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/ykJmrZ5v0Oo" },
           { name: "Rosca Alternada", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/sAq_ocpRh_I" },
         ],
@@ -60,8 +61,69 @@ export const workoutPlans: WorkoutPlan[] = [
         exercises: [
           { name: "Agachamento", sets: "3", reps: "12", rest: "90s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
           { name: "Leg Press", sets: "3", reps: "12", rest: "90s", videoUrl: "https://www.youtube.com/embed/IZxyjW7MPJQ" },
+          { name: "Cadeira Extensora", sets: "3", reps: "15", rest: "60s", videoUrl: "https://www.youtube.com/embed/YyvSfVjQeL0" },
           { name: "Elevação Lateral", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/3VcKaXpzqRo" },
           { name: "Desenvolvimento com Halteres", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/qEwKCR5JCog" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "intermediario",
+    level: "intermediario",
+    title: "Treino Intermediário",
+    description: "Segundo mês – Divisão ABCD",
+    frequency: "4x por semana",
+    workouts: [
+      {
+        id: "int-a",
+        day: "Segunda-feira",
+        focus: "Peito",
+        exercises: [
+          { name: "Supino Reto com Barra", sets: "4", reps: "10", rest: "90s", videoUrl: "https://www.youtube.com/embed/rT7DgCr-3pg" },
+          { name: "Supino Inclinado Halteres", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/8iPEnn-ltC8" },
+          { name: "Crucifixo Inclinado", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/eozdVDA78K0" },
+          { name: "Cross Over", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/taI4XduLpTk" },
+          { name: "Flexão de Braço", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/IODxDxX7oi4" },
+        ],
+      },
+      {
+        id: "int-b",
+        day: "Terça-feira",
+        focus: "Costas",
+        exercises: [
+          { name: "Puxada Aberta", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/CAwf7n6Luuc" },
+          { name: "Remada Curvada", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/9efgcGjQe_s" },
+          { name: "Remada Unilateral", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/pYcpY20QaE8" },
+          { name: "Pullover", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/FK4rHfWKEac" },
+          { name: "Remada Cavalinho", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/GZbfZ033f74" },
+        ],
+      },
+      {
+        id: "int-c",
+        day: "Quarta-feira",
+        focus: "Pernas Completo",
+        exercises: [
+          { name: "Agachamento Livre", sets: "4", reps: "10", rest: "120s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
+          { name: "Leg Press 45°", sets: "4", reps: "12", rest: "90s", videoUrl: "https://www.youtube.com/embed/IZxyjW7MPJQ" },
+          { name: "Cadeira Extensora", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/YyvSfVjQeL0" },
+          { name: "Mesa Flexora", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/1Tq3QdYUuHs" },
+          { name: "Stiff", sets: "3", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/1uDiW5--rAE" },
+          { name: "Panturrilha Sentado", sets: "4", reps: "15", rest: "30s", videoUrl: "https://www.youtube.com/embed/gwLzBJYoWlI" },
+        ],
+      },
+      {
+        id: "int-d",
+        day: "Quinta-feira",
+        focus: "Ombros, Bíceps e Tríceps",
+        exercises: [
+          { name: "Desenvolvimento Militar", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/qEwKCR5JCog" },
+          { name: "Elevação Lateral", sets: "4", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/3VcKaXpzqRo" },
+          { name: "Elevação Frontal", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/gzDSuGMcUlE" },
+          { name: "Rosca Direta Barra W", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/ykJmrZ5v0Oo" },
+          { name: "Rosca Martelo", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/zC3nLlEvin4" },
+          { name: "Tríceps Pulley", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/kiuVA0gs3EI" },
+          { name: "Tríceps Testa", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/ir5PsbniVSc" },
         ],
       },
     ],
@@ -70,7 +132,7 @@ export const workoutPlans: WorkoutPlan[] = [
     id: "avancado",
     level: "avancado",
     title: "Treino Avançado",
-    description: "Segundo mês – Divisão ABCDE",
+    description: "Terceiro mês – Divisão ABCDE",
     frequency: "5x por semana",
     workouts: [
       {
@@ -81,8 +143,10 @@ export const workoutPlans: WorkoutPlan[] = [
           { name: "Supino Reto", sets: "4", reps: "10", rest: "90s", videoUrl: "https://www.youtube.com/embed/rT7DgCr-3pg" },
           { name: "Supino Inclinado", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/8iPEnn-ltC8" },
           { name: "Crucifixo", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/eozdVDA78K0" },
+          { name: "Cross Over", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/taI4XduLpTk" },
           { name: "Tríceps Corda", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/kiuVA0gs3EI" },
           { name: "Tríceps Francês", sets: "3", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/ir5PsbniVSc" },
+          { name: "Mergulho", sets: "3", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/2z8JmcrW-As" },
         ],
       },
       {
@@ -93,8 +157,10 @@ export const workoutPlans: WorkoutPlan[] = [
           { name: "Barra Fixa", sets: "4", reps: "8", rest: "90s", videoUrl: "https://www.youtube.com/embed/eGo4IYlbE5g" },
           { name: "Remada Curvada", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/9efgcGjQe_s" },
           { name: "Puxada Alta", sets: "4", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/CAwf7n6Luuc" },
+          { name: "Remada Cavalinho", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/GZbfZ033f74" },
           { name: "Rosca Direta", sets: "4", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/ykJmrZ5v0Oo" },
           { name: "Rosca Martelo", sets: "4", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/zC3nLlEvin4" },
+          { name: "Rosca Scott", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/sAq_ocpRh_I" },
         ],
       },
       {
@@ -105,7 +171,9 @@ export const workoutPlans: WorkoutPlan[] = [
           { name: "Agachamento Livre", sets: "4", reps: "10", rest: "120s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
           { name: "Leg Press", sets: "4", reps: "12", rest: "90s", videoUrl: "https://www.youtube.com/embed/IZxyjW7MPJQ" },
           { name: "Cadeira Extensora", sets: "4", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/YyvSfVjQeL0" },
+          { name: "Mesa Flexora", sets: "4", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/1Tq3QdYUuHs" },
           { name: "Stiff", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/1uDiW5--rAE" },
+          { name: "Avanço", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/QOVaHwm-Q6U" },
           { name: "Panturrilha em Pé", sets: "4", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/gwLzBJYoWlI" },
         ],
       },
@@ -116,7 +184,9 @@ export const workoutPlans: WorkoutPlan[] = [
         exercises: [
           { name: "Desenvolvimento Militar", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/qEwKCR5JCog" },
           { name: "Elevação Lateral", sets: "4", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/3VcKaXpzqRo" },
+          { name: "Elevação Frontal", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/gzDSuGMcUlE" },
           { name: "Encolhimento de Ombros", sets: "4", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/cJRVVxmytaM" },
+          { name: "Face Pull", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/rep-qVOkqgk" },
           { name: "Abdominal Infra", sets: "4", reps: "15", rest: "30s", videoUrl: "https://www.youtube.com/embed/1fbU_MkV7NE" },
           { name: "Prancha", sets: "3", reps: "45s", rest: "30s", videoUrl: "https://www.youtube.com/embed/ASdvN_XEl_c" },
         ],
@@ -131,6 +201,7 @@ export const workoutPlans: WorkoutPlan[] = [
           { name: "Burpees", sets: "3", reps: "40s", rest: "20s", videoUrl: "https://www.youtube.com/embed/dZgVxmf6jkA" },
           { name: "Polichinelos", sets: "3", reps: "40s", rest: "20s", videoUrl: "https://www.youtube.com/embed/c4DAnQ6DtF8" },
           { name: "Mountain Climbers", sets: "3", reps: "40s", rest: "20s", videoUrl: "https://www.youtube.com/embed/nmwgirgXLYM" },
+          { name: "Sprint no Lugar", sets: "3", reps: "30s", rest: "30s", videoUrl: "https://www.youtube.com/embed/H4gMdKErVl0" },
         ],
       },
     ],

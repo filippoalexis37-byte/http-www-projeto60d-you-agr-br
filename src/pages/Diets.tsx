@@ -1,7 +1,50 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Salad, Check, X } from "lucide-react";
+import { Salad, Check, X, Play } from "lucide-react";
 import { dietPlans, forbiddenFoods, allowedFoods } from "@/data/diets";
+
+import type { Meal } from "@/data/diets";
+
+const MealCard = ({ meal, index }: { meal: Meal; index: number }) => {
+  const [showVideo, setShowVideo] = useState(false);
+  return (
+    <div className="space-y-1">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.08 }}
+        className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
+      >
+        <span className="text-2xl">{meal.emoji}</span>
+        <div className="flex-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">{meal.time}</p>
+          <p className="mt-0.5 text-sm text-foreground">{meal.description}</p>
+        </div>
+        {meal.videoUrl && (
+          <div
+            onClick={() => setShowVideo(!showVideo)}
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+          >
+            <Play className="h-4 w-4" />
+          </div>
+        )}
+      </motion.div>
+      {showVideo && meal.videoUrl && (
+        <div className="overflow-hidden rounded-lg">
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={meal.videoUrl}
+              title={meal.time}
+              className="absolute inset-0 h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Diets = () => {
   const [selectedDiet, setSelectedDiet] = useState<string>("emagrecimento");
@@ -16,12 +59,12 @@ const Diets = () => {
       </h1>
 
       {/* Diet selector */}
-      <div className="mt-6 flex gap-2">
+      <div className="mt-6 flex flex-wrap gap-2">
         {dietPlans.map((d) => (
           <button
             key={d.id}
             onClick={() => setSelectedDiet(d.id)}
-            className={`flex-1 rounded-lg px-3 py-3 text-sm font-semibold transition-all ${
+            className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition-all ${
               selectedDiet === d.id
                 ? d.color === "primary"
                   ? "gradient-primary text-primary-foreground"
@@ -40,21 +83,7 @@ const Diets = () => {
       <div className="mt-6 space-y-3">
         <h2 className="font-display text-xl tracking-wide text-foreground">CARDÁPIO DIÁRIO</h2>
         {diet.meals.map((meal, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
-          >
-            <span className="text-2xl">{meal.emoji}</span>
-            <div className="flex-1">
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                {meal.time}
-              </p>
-              <p className="mt-0.5 text-sm text-foreground">{meal.description}</p>
-            </div>
-          </motion.div>
+          <MealCard key={`${selectedDiet}-${i}`} meal={meal} index={i} />
         ))}
       </div>
 
