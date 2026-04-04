@@ -40,21 +40,7 @@ const Diets = () => {
       <div className="mt-6 space-y-3">
         <h2 className="font-display text-xl tracking-wide text-foreground">CARDÁPIO DIÁRIO</h2>
         {diet.meals.map((meal, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
-          >
-            <span className="text-2xl">{meal.emoji}</span>
-            <div className="flex-1">
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                {meal.time}
-              </p>
-              <p className="mt-0.5 text-sm text-foreground">{meal.description}</p>
-            </div>
-          </motion.div>
+          <MealCard key={`${selectedDiet}-${i}`} meal={meal} index={i} />
         ))}
       </div>
 

@@ -42,7 +42,7 @@ const Workouts = () => {
                 : "bg-secondary text-secondary-foreground"
             }`}
           >
-            {p.level === "iniciante" ? "🔰 Iniciante" : "🧠 Avançado"}
+            {p.level === "iniciante" ? "🔰 Iniciante" : p.level === "intermediario" ? "💪 Intermediário" : "🧠 Avançado"}
           </button>
         ))}
       </div>
