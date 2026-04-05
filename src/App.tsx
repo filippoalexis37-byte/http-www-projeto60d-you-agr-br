@@ -14,6 +14,8 @@ import Tools from "./pages/Tools";
 import Mindset from "./pages/Mindset";
 import Progress from "./pages/Progress";
 import Admin from "./pages/Admin";
+import Supplements from "./pages/Supplements";
+import FitnessChat from "./pages/FitnessChat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,8 @@ const AppRoutes = () => {
           <Route path="/mentalidade" element={<ProtectedRoute><Mindset /></ProtectedRoute>} />
           <Route path="/evolucao" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/suplementos" element={<ProtectedRoute><Supplements /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><FitnessChat /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         {user && !hideBottomNav && <BottomNav />}
