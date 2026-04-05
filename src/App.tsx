@@ -45,6 +45,8 @@ const AppRoutes = () => {
           <Route path="/mentalidade" element={<ProtectedRoute><Mindset /></ProtectedRoute>} />
           <Route path="/evolucao" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/suplementos" element={<ProtectedRoute><Supplements /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><FitnessChat /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         {user && !hideBottomNav && <BottomNav />}
