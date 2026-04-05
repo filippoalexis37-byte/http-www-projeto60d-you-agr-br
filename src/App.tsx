@@ -27,6 +27,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const hideBottomNav = ["/landing", "/auth", "/admin"].includes(location.pathname);
 
   return (
     <>
@@ -43,7 +45,7 @@ const AppRoutes = () => {
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {user && <BottomNav />}
+        {user && !hideBottomNav && <BottomNav />}
       </div>
     </>
   );
