@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import BottomNav from "@/components/BottomNav";
 import Landing from "./pages/Landing";
@@ -27,6 +27,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const hideBottomNav = ["/landing", "/auth", "/admin"].includes(location.pathname);
 
   return (
     <>
@@ -43,7 +45,7 @@ const AppRoutes = () => {
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {user && <BottomNav />}
+        {user && !hideBottomNav && <BottomNav />}
       </div>
     </>
   );
