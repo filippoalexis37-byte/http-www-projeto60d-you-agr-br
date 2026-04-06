@@ -15,10 +15,10 @@ import heroImage from "@/assets/hero-fitness.jpg";
 const benefits = [
   { icon: Dumbbell, title: "Treinos Progressivos", text: "Do iniciante ao avançado, com vídeos de cada exercício" },
   { icon: Flame, title: "Dietas Sob Medida", text: "Planos alimentares para cutting, bulking e manutenção" },
+  { icon: Bot, title: "Assistente Virtual IA", text: "Tire dúvidas sobre treinos, dietas e suplementação 24h por dia" },
   { icon: Brain, title: "Mentalidade Vencedora", text: "Técnicas de disciplina, foco e hábitos duradouros" },
   { icon: Trophy, title: "Medalhas & Conquistas", text: "Gamificação para te manter motivado todos os dias" },
   { icon: BarChart3, title: "Acompanhamento Real", text: "Veja sua evolução com dados e estatísticas" },
-  { icon: Clock, title: "Suporte 60 Dias", text: "Acompanhamento completo durante toda jornada" },
 ];
 
 const testimonials = [
