@@ -1,46 +1,41 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Salad, Check, X, Play } from "lucide-react";
+import { Salad, Check, X, ChefHat, ChevronDown } from "lucide-react";
 import { dietPlans, forbiddenFoods, allowedFoods } from "@/data/diets";
 
 import type { Meal } from "@/data/diets";
 
 const MealCard = ({ meal, index }: { meal: Meal; index: number }) => {
-  const [showVideo, setShowVideo] = useState(false);
+  const [showRecipe, setShowRecipe] = useState(false);
   return (
     <div className="space-y-1">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.08 }}
-        className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
+        className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 cursor-pointer"
+        onClick={() => meal.recipe && setShowRecipe(!showRecipe)}
       >
         <span className="text-2xl">{meal.emoji}</span>
         <div className="flex-1">
           <p className="text-xs font-semibold uppercase tracking-wider text-primary">{meal.time}</p>
           <p className="mt-0.5 text-sm text-foreground">{meal.description}</p>
         </div>
-        {meal.videoUrl && (
-          <div
-            onClick={() => setShowVideo(!showVideo)}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
-          >
-            <Play className="h-4 w-4" />
+        {meal.recipe && (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+            <ChefHat className="h-4 w-4" />
           </div>
         )}
       </motion.div>
-      {showVideo && meal.videoUrl && (
-        <div className="overflow-hidden rounded-lg">
-          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              src={meal.videoUrl}
-              title={meal.time}
-              className="absolute inset-0 h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>
+      {showRecipe && meal.recipe && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="rounded-lg border border-primary/20 bg-primary/5 p-4"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">📋 Modo de preparo</p>
+          <p className="text-sm text-foreground leading-relaxed">{meal.recipe}</p>
+        </motion.div>
       )}
     </div>
   );
@@ -82,6 +77,7 @@ const Diets = () => {
       {/* Meals */}
       <div className="mt-6 space-y-3">
         <h2 className="font-display text-xl tracking-wide text-foreground">CARDÁPIO DIÁRIO</h2>
+        <p className="text-xs text-muted-foreground">Toque na refeição para ver o modo de preparo 👇</p>
         {diet.meals.map((meal, i) => (
           <MealCard key={`${selectedDiet}-${i}`} meal={meal} index={i} />
         ))}
