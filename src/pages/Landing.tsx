@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
   Star, Zap, Brain, Clock, Shield, Users, TrendingUp, Award,
-  Calendar, Heart, BarChart3, Loader2, LogOut, Settings, LogIn
+  Calendar, Heart, BarChart3, Loader2, LogOut, Settings, LogIn, MessageCircle, Bot
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
