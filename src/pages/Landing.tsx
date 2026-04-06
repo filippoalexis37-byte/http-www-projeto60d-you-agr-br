@@ -375,6 +375,7 @@ const Landing = () => {
           {[
             { icon: Dumbbell, title: "Treinos com vídeos", items: ["Divisão ABC para iniciantes", "Divisão ABCDE avançada", "Vídeo demonstrativo em cada exercício", "Rastreamento de treinos concluídos"] },
             { icon: Heart, title: "Nutrição inteligente", items: ["Dieta cutting (emagrecimento)", "Dieta bulking (ganho de massa)", "Dieta manutenção", "Listas de alimentos e substituições"] },
+            { icon: Bot, title: "Assistente Virtual IA", items: ["Tire dúvidas de treino em tempo real", "Orientação de dietas e alimentação", "Dicas de suplementação correta", "Disponível 24h, como um personal digital"] },
             { icon: Brain, title: "Mindset & Disciplina", items: ["Técnicas de foco e motivação", "Construção de hábitos", "Mentalidade de campeão", "Superação de barreiras"] },
             { icon: Trophy, title: "Gamificação", items: ["Medalhas Bronze, Prata e Ouro", "Rastreamento de evolução", "Metas progressivas", "Histórico de conquistas"] },
           ].map((section, i) => (
