@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
   Star, Zap, Brain, Clock, Shield, Users, TrendingUp, Award,
-  Calendar, Heart, BarChart3, Loader2, LogOut, Settings, LogIn
+  Calendar, Heart, BarChart3, Loader2, LogOut, Settings, LogIn, MessageCircle, Bot
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,10 +15,10 @@ import heroImage from "@/assets/hero-fitness.jpg";
 const benefits = [
   { icon: Dumbbell, title: "Treinos Progressivos", text: "Do iniciante ao avançado, com vídeos de cada exercício" },
   { icon: Flame, title: "Dietas Sob Medida", text: "Planos alimentares para cutting, bulking e manutenção" },
+  { icon: Bot, title: "Assistente Virtual IA", text: "Tire dúvidas sobre treinos, dietas e suplementação 24h por dia" },
   { icon: Brain, title: "Mentalidade Vencedora", text: "Técnicas de disciplina, foco e hábitos duradouros" },
   { icon: Trophy, title: "Medalhas & Conquistas", text: "Gamificação para te manter motivado todos os dias" },
   { icon: BarChart3, title: "Acompanhamento Real", text: "Veja sua evolução com dados e estatísticas" },
-  { icon: Clock, title: "Suporte 60 Dias", text: "Acompanhamento completo durante toda jornada" },
 ];
 
 const testimonials = [
@@ -375,6 +375,7 @@ const Landing = () => {
           {[
             { icon: Dumbbell, title: "Treinos com vídeos", items: ["Divisão ABC para iniciantes", "Divisão ABCDE avançada", "Vídeo demonstrativo em cada exercício", "Rastreamento de treinos concluídos"] },
             { icon: Heart, title: "Nutrição inteligente", items: ["Dieta cutting (emagrecimento)", "Dieta bulking (ganho de massa)", "Dieta manutenção", "Listas de alimentos e substituições"] },
+            { icon: Bot, title: "Assistente Virtual IA", items: ["Tire dúvidas de treino em tempo real", "Orientação de dietas e alimentação", "Dicas de suplementação correta", "Disponível 24h, como um personal digital"] },
             { icon: Brain, title: "Mindset & Disciplina", items: ["Técnicas de foco e motivação", "Construção de hábitos", "Mentalidade de campeão", "Superação de barreiras"] },
             { icon: Trophy, title: "Gamificação", items: ["Medalhas Bronze, Prata e Ouro", "Rastreamento de evolução", "Metas progressivas", "Histórico de conquistas"] },
           ].map((section, i) => (
