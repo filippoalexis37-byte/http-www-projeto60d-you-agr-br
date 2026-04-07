@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   Shield, Check, X, ArrowLeft, Users, Trophy, Dumbbell,
-  TrendingUp, Calendar, Search, UserCheck, UserX, Clock
+  TrendingUp, Calendar, Search, UserCheck, UserX, Clock,
+  LogOut, LogIn, AlertTriangle, Timer
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,13 +32,21 @@ interface MedalStats {
   gold: number;
 }
 
+const getTrialStatus = (createdAt: string) => {
+  const created = new Date(createdAt);
+  const trialEnd = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const daysLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return { trialEnd, expired: daysLeft <= 0, daysLeft: Math.max(0, daysLeft) };
+};
+
 const Admin = () => {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState<"all" | "approved" | "pending">("all");
+  const [filter, setFilter] = useState<"all" | "approved" | "pending" | "trial_active" | "trial_expired">("all");
   const [workoutStats, setWorkoutStats] = useState<WorkoutStats>({ total: 0, today: 0, thisWeek: 0 });
   const [medalStats, setMedalStats] = useState<MedalStats>({ total: 0, bronze: 0, silver: 0, gold: 0 });
   const [userWorkoutCounts, setUserWorkoutCounts] = useState<Record<string, number>>({});
@@ -80,7 +89,6 @@ const Admin = () => {
       gold: medalsData.filter(m => m.medal_name.includes("Ouro")).length,
     });
 
-    // Count workouts per user
     const counts: Record<string, number> = {};
     (allWorkouts.data ?? []).forEach((w: any) => {
       counts[w.user_id] = (counts[w.user_id] || 0) + 1;
@@ -124,8 +132,13 @@ const Admin = () => {
 
   const filteredUsers = users.filter(u => {
     const matchesSearch = !searchTerm || (u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesFilter = filter === "all" || (filter === "approved" ? u.is_approved : !u.is_approved);
-    return matchesSearch && matchesFilter;
+    if (filter === "all") return matchesSearch;
+    if (filter === "approved") return matchesSearch && u.is_approved;
+    if (filter === "pending") return matchesSearch && !u.is_approved;
+    const trial = getTrialStatus(u.created_at);
+    if (filter === "trial_active") return matchesSearch && !trial.expired;
+    if (filter === "trial_expired") return matchesSearch && trial.expired;
+    return matchesSearch;
   });
 
   const getDaysAgo = (dateStr: string) => {
@@ -134,6 +147,26 @@ const Admin = () => {
     if (days === 1) return "Ontem";
     return `${days} dias atrás`;
   };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/landing");
+  };
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6">
+        <div className="text-center">
+          <Shield className="mx-auto h-16 w-16 text-primary" />
+          <h1 className="mt-4 font-display text-3xl text-foreground">PAINEL ADMIN</h1>
+          <p className="mt-2 text-muted-foreground">Faça login para acessar o painel.</p>
+          <Button onClick={() => navigate("/auth?mode=login")} className="mt-4 gradient-primary gap-2">
+            <LogIn className="h-4 w-4" /> Entrar
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
@@ -152,18 +185,30 @@ const Admin = () => {
 
   const approvedCount = users.filter(u => u.is_approved).length;
   const pendingCount = users.filter(u => !u.is_approved).length;
+  const trialActiveCount = users.filter(u => !getTrialStatus(u.created_at).expired).length;
+  const trialExpiredCount = users.filter(u => getTrialStatus(u.created_at).expired).length;
 
   return (
     <div className="min-h-screen px-4 pb-24 pt-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="font-display text-3xl text-foreground">
-          <Shield className="mr-2 inline h-6 w-6 text-primary" />
-          PAINEL ADMIN
-        </h1>
+      {/* Header with login/logout */}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className="font-display text-3xl text-foreground">
+            <Shield className="mr-2 inline h-6 w-6 text-primary" />
+            PAINEL ADMIN
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:block text-xs text-muted-foreground truncate max-w-[120px]">
+            {user.email}
+          </span>
+          <Button size="sm" variant="outline" onClick={handleSignOut} className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10">
+            <LogOut className="h-4 w-4" /> Sair
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -209,13 +254,15 @@ const Admin = () => {
 
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-xs font-medium">Engajamento</span>
+            <Timer className="h-4 w-4 text-primary" />
+            <span className="text-xs font-medium">Teste Grátis</span>
           </div>
-          <p className="mt-2 font-display text-3xl text-foreground">
-            {approvedCount > 0 ? Math.round((Object.keys(userWorkoutCounts).length / approvedCount) * 100) : 0}%
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">usuários treinando</p>
+          <p className="mt-2 font-display text-3xl text-foreground">{trialExpiredCount}</p>
+          <div className="mt-1 flex gap-2 text-xs">
+            <span className="text-primary">{trialActiveCount} ativos</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-destructive">{trialExpiredCount} expirados</span>
+          </div>
         </div>
       </div>
 
@@ -232,18 +279,24 @@ const Admin = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          {(["all", "approved", "pending"] as const).map((f) => (
+        <div className="flex flex-wrap items-center gap-2">
+          {([
+            { key: "all", label: `Todos (${users.length})` },
+            { key: "approved", label: `Aprovados (${approvedCount})` },
+            { key: "pending", label: `Pendentes (${pendingCount})` },
+            { key: "trial_active", label: `Trial ativo (${trialActiveCount})` },
+            { key: "trial_expired", label: `Trial expirado (${trialExpiredCount})` },
+          ] as const).map((f) => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              key={f.key}
+              onClick={() => setFilter(f.key)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                filter === f
+                filter === f.key
                   ? "gradient-primary text-primary-foreground"
                   : "bg-card text-muted-foreground border border-border hover:text-foreground"
               }`}
             >
-              {f === "all" ? `Todos (${users.length})` : f === "approved" ? `Aprovados (${approvedCount})` : `Pendentes (${pendingCount})`}
+              {f.label}
             </button>
           ))}
 
@@ -265,45 +318,59 @@ const Admin = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {filteredUsers.map((user) => (
-            <div
-              key={user.id}
-              className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/20"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                    {(user.full_name || "?")[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">
-                      {user.full_name || "Sem nome"}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>{getDaysAgo(user.created_at)}</span>
-                      <span>·</span>
-                      <Dumbbell className="h-3 w-3" />
-                      <span>{userWorkoutCounts[user.user_id] || 0} treinos</span>
+          {filteredUsers.map((u) => {
+            const trial = getTrialStatus(u.created_at);
+            return (
+              <div
+                key={u.id}
+                className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/20"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      {(u.full_name || "?")[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        {u.full_name || "Sem nome"}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        <span>{getDaysAgo(u.created_at)}</span>
+                        <span>·</span>
+                        <Dumbbell className="h-3 w-3" />
+                        <span>{userWorkoutCounts[u.user_id] || 0} treinos</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={user.is_approved ? "default" : "secondary"}>
-                    {user.is_approved ? "Aprovado" : "Pendente"}
-                  </Badge>
-                  <Button
-                    size="icon"
-                    variant={user.is_approved ? "destructive" : "default"}
-                    onClick={() => toggleApproval(user.user_id, !user.is_approved)}
-                    className={!user.is_approved ? "gradient-primary" : ""}
-                  >
-                    {user.is_approved ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant={u.is_approved ? "default" : "secondary"}>
+                        {u.is_approved ? "Aprovado" : "Pendente"}
+                      </Badge>
+                      {trial.expired ? (
+                        <Badge variant="destructive" className="text-[10px] gap-1">
+                          <AlertTriangle className="h-3 w-3" /> Trial expirado
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] gap-1 border-primary/30 text-primary">
+                          <Timer className="h-3 w-3" /> {trial.daysLeft}d restantes
+                        </Badge>
+                      )}
+                    </div>
+                    <Button
+                      size="icon"
+                      variant={u.is_approved ? "destructive" : "default"}
+                      onClick={() => toggleApproval(u.user_id, !u.is_approved)}
+                      className={!u.is_approved ? "gradient-primary" : ""}
+                    >
+                      {u.is_approved ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
