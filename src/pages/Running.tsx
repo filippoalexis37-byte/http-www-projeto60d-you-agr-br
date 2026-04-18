@@ -339,20 +339,47 @@ export default function Running() {
 
   const saveRun = async () => {
     if (!user) return;
+    const runData = {
+      user_id: user.id,
+      workout_name: `Corrida ${distance.toFixed(2)}km`,
+      workout_level: "cardio",
+      completed_at: new Date().toISOString()
+    };
+
     try {
-      const { error } = await supabase.from("completed_workouts").insert({
-        user_id: user.id,
-        workout_name: `Corrida ${distance.toFixed(2)}km`,
-        workout_level: "cardio"
-      });
+      const { error } = await supabase.from("completed_workouts").insert(runData);
       if (error) throw error;
       toast.success("Corrida salva com sucesso!");
       resetStats();
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao salvar corrida.");
+      // Save locally if offline
+      const pendingRuns = JSON.parse(localStorage.getItem("pending_runs") || "[]");
+      pendingRuns.push(runData);
+      localStorage.setItem("pending_runs", JSON.stringify(pendingRuns));
+      toast.warning("Sem internet. Corrida salva no celular e será enviada quando você voltar online!");
+      resetStats();
     }
   };
+
+  // Auto-sync pending runs when online
+  useEffect(() => {
+    const syncRuns = async () => {
+      if (!user || !navigator.onLine) return;
+      const pendingRuns = JSON.parse(localStorage.getItem("pending_runs") || "[]");
+      if (pendingRuns.length === 0) return;
+
+      const { error } = await supabase.from("completed_workouts").insert(pendingRuns);
+      if (!error) {
+        localStorage.removeItem("pending_runs");
+        toast.success(`${pendingRuns.length} treinos offline sincronizados!`);
+      }
+    };
+    
+    window.addEventListener('online', syncRuns);
+    syncRuns(); // Try on load
+    return () => window.removeEventListener('online', syncRuns);
+  }, [user]);
 
   return (
     <div className="fixed inset-0 bg-[#000] z-50 flex flex-col overflow-hidden text-white font-sans select-none">
