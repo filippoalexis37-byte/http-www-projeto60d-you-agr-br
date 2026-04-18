@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const navItems = [
   { path: "/", icon: Home, label: "Início" },
   { path: "/treinos", icon: Dumbbell, label: "Treinos" },
-  { path: "/chat", icon: MessageCircle, label: "Chat IA" },
+  { path: "/dietas", icon: Salad, label: "Dieta" },
   { path: "/corrida", icon: Activity, label: "Corrida" },
   { path: "/evolucao", icon: TrendingUp, label: "Evolução" },
 ];
