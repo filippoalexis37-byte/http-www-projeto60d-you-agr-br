@@ -206,4 +206,77 @@ export const workoutPlans: WorkoutPlan[] = [
       },
     ],
   },
+  {
+    id: "fem-iniciante",
+    level: "iniciante",
+    title: "Feminino Iniciante",
+    description: "Foco em Pernas e Glúteos",
+    frequency: "3x por semana",
+    workouts: [
+      {
+        id: "fem-ini-a",
+        day: "Segunda-feira",
+        focus: "Pernas e Glúteos",
+        exercises: [
+          { name: "Agachamento Livre", sets: "3", reps: "15", rest: "60s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
+          { name: "Elevação Pélvica", sets: "3", reps: "15", rest: "60s", videoUrl: "https://www.youtube.com/embed/8rYqDqI25v8" },
+          { name: "Cadeira Abdutora", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/Z0oYpM8k29I" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "gravidas",
+    level: "iniciante",
+    title: "Gestantes",
+    description: "Exercícios Seguros para Grávidas",
+    frequency: "3x por semana",
+    workouts: [
+      {
+        id: "grav-a",
+        day: "Terça-feira",
+        focus: "Mobilidade e Leveza",
+        exercises: [
+          { name: "Alongamento Gato-Vaca", sets: "3", reps: "10", rest: "45s", videoUrl: "https://www.youtube.com/embed/kqnua4rGlFI" },
+          { name: "Agachamento com Bola", sets: "3", reps: "12", rest: "60s", videoUrl: "https://www.youtube.com/embed/l2tX2-nNf6k" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "funcional",
+    level: "intermediario",
+    title: "Funcional",
+    description: "Treino de Corpo Inteiro",
+    frequency: "4x por semana",
+    workouts: [
+      {
+        id: "func-a",
+        day: "Segunda-feira",
+        focus: "Cardio e Core",
+        exercises: [
+          { name: "Burpees", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/dZgVxmf6jkA" },
+          { name: "Kettlebell Swing", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/sIexCV_F1D4" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "crossfit",
+    level: "avancado",
+    title: "Crossfit",
+    description: "Alta Intensidade (WOD)",
+    frequency: "5x por semana",
+    workouts: [
+      {
+        id: "cross-a",
+        day: "WOD 1",
+        focus: "Força e Condicionamento",
+        exercises: [
+          { name: "Thruster", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/L219ltL15zk" },
+          { name: "Pull-ups", sets: "4", reps: "10", rest: "60s", videoUrl: "https://www.youtube.com/embed/eGo4IYlbE5g" }
+        ]
+      }
+    ]
+  }
 ];

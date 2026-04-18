@@ -137,6 +137,29 @@ export const dietPlans: DietPlan[] = [
       "Ferro: combine vegetais escuros com vitamina C",
     ],
   },
+  {
+    id: "economica",
+    title: "Dieta Econômica",
+    subtitle: "Baixo custo – 2000 kcal/dia",
+    icon: "💰",
+    color: "primary",
+    calories: "2000",
+    meals: [
+      { time: "Café da manhã", emoji: "🥚", description: "Cuscuz com ovo frito na manteiga", recipe: "Umedeça meia xícara de flocão de milho com água e sal, deixe descansar por 5 min e cozinhe no cuscuzeiro. Frite 2 ovos em um pouco de manteiga. Acompanha café preto." },
+      { time: "Lanche da manhã", emoji: "🍌", description: "Banana com aveia", recipe: "Amasse 2 bananas pratas e misture com 2 colheres de sopa de aveia em flocos." },
+      { time: "Almoço", emoji: "🍛", description: "Arroz, feijão, frango desfiado e repolho", recipe: "Sirva 4 colheres de arroz, 2 de feijão, 100g de frango desfiado refogado com cebola e tomate. Salada de repolho picado com cenoura ralada, temperado com limão e sal." },
+      { time: "Lanche da tarde", emoji: "🍠", description: "Batata doce cozida", recipe: "Cozinhe 150g de batata doce e amasse. Pode adicionar uma pitada de canela." },
+      { time: "Jantar", emoji: "🍲", description: "Macarrão com carne moída (patinho ou acém moído)", recipe: "Cozinhe 100g de macarrão (peso cru). Faça um molho simples com 100g de carne moída, alho, cebola e extrato de tomate." },
+      { time: "Ceia", emoji: "🥚", description: "2 ovos cozidos", recipe: "Cozinhe 2 ovos por 10 minutos. Tempere com um pouco de sal e orégano." },
+    ],
+    tips: [
+      "Compre frango, ovo e carne moída (proteínas mais baratas)",
+      "Aveia, arroz, feijão e macarrão rendem bastante",
+      "Compre frutas e legumes da estação na feira (é mais barato)",
+      "Beba bastante água",
+      "Evite gastar com suplementos, invista na comida de verdade",
+    ],
+  },
 ];
 
 export const forbiddenFoods = [

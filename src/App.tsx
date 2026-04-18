@@ -17,20 +17,39 @@ import Admin from "./pages/Admin";
 import Supplements from "./pages/Supplements";
 import FitnessChat from "./pages/FitnessChat";
 import NotFound from "./pages/NotFound";
+import Pending from "./pages/Pending";
+import Checkout from "./pages/Checkout";
+import Affiliates from "./pages/Affiliates";
+import Running from "./pages/Running";
 
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, isApproved, isSubscribed, trialEndDate, isAdmin } = useAuth();
+  
   if (loading) return null;
   if (!user) return <Navigate to="/landing" replace />;
+  
+  // Se for admin, pula essas validações
+  if (!isAdmin) {
+    if (!isApproved) {
+      return <Navigate to="/pending" replace />;
+    }
+    
+    // Calcula se o trial de 7 dias acabou
+    const hasTrialEnded = trialEndDate && new Date() > new Date(trialEndDate);
+    if (!isSubscribed && hasTrialEnded) {
+      return <Navigate to="/checkout" replace />;
+    }
+  }
+
   return <>{children}</>;
 };
 
 const AppRoutes = () => {
   const { user } = useAuth();
   const location = useLocation();
-  const hideBottomNav = ["/landing", "/auth", "/admin"].includes(location.pathname);
+  const hideBottomNav = ["/landing", "/auth", "/admin", "/pending", "/checkout"].includes(location.pathname);
 
   return (
     <>
@@ -38,6 +57,8 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/landing" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/pending" element={<Pending />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/treinos" element={<ProtectedRoute><Workouts /></ProtectedRoute>} />
           <Route path="/dietas" element={<ProtectedRoute><Diets /></ProtectedRoute>} />
@@ -45,6 +66,8 @@ const AppRoutes = () => {
           <Route path="/mentalidade" element={<ProtectedRoute><Mindset /></ProtectedRoute>} />
           <Route path="/evolucao" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/afiliados" element={<ProtectedRoute><Affiliates /></ProtectedRoute>} />
+          <Route path="/corrida" element={<ProtectedRoute><Running /></ProtectedRoute>} />
           <Route path="/suplementos" element={<ProtectedRoute><Supplements /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><FitnessChat /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

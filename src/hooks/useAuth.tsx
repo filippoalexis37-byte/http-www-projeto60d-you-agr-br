@@ -9,6 +9,7 @@ interface AuthContextType {
   isApproved: boolean;
   isSubscribed: boolean;
   subscriptionEnd: string | null;
+  trialEndDate: string | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   isApproved: false,
   isSubscribed: false,
   subscriptionEnd: null,
+  trialEndDate: null,
   loading: true,
   signOut: async () => {},
 });
@@ -33,17 +35,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
+  const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkUserStatus = async (userId: string) => {
     const [rolesRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
-      supabase.from("profiles").select("is_approved").eq("user_id", userId).single(),
+      supabase.from("profiles").select("is_approved, updated_at").eq("user_id", userId).single(),
     ]);
 
     const userIsAdmin = rolesRes.data?.some((r: any) => r.role === "admin") ?? false;
     setIsAdmin(userIsAdmin);
     setIsApproved(profileRes.data?.is_approved ?? false);
+
+    if (profileRes.data?.is_approved && profileRes.data?.updated_at) {
+      const updated = new Date(profileRes.data.updated_at);
+      updated.setDate(updated.getDate() + 7);
+      setTrialEndDate(updated.toISOString());
+    } else {
+      setTrialEndDate(null);
+    }
 
     // Admins get automatic premium access
     if (userIsAdmin) {
@@ -73,6 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setIsApproved(false);
           setIsSubscribed(false);
           setSubscriptionEnd(null);
+          setTrialEndDate(null);
         }
         setLoading(false);
       }
@@ -95,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, isSubscribed, subscriptionEnd, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, isSubscribed, subscriptionEnd, trialEndDate, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

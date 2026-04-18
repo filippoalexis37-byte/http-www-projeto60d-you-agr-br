@@ -15,8 +15,10 @@ interface UserProfile {
   id: string;
   user_id: string;
   full_name: string | null;
+  email: string | null;
   is_approved: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 interface WorkoutStats {
@@ -32,9 +34,10 @@ interface MedalStats {
   gold: number;
 }
 
-const getTrialStatus = (createdAt: string) => {
-  const created = new Date(createdAt);
-  const trialEnd = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+const getTrialStatus = (updatedAt: string, isApproved: boolean) => {
+  if (!isApproved) return { trialEnd: null, expired: false, daysLeft: 0 };
+  const updated = new Date(updatedAt);
+  const trialEnd = new Date(updated.getTime() + 7 * 24 * 60 * 60 * 1000);
   const now = new Date();
   const daysLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   return { trialEnd, expired: daysLeft <= 0, daysLeft: Math.max(0, daysLeft) };
@@ -135,9 +138,9 @@ const Admin = () => {
     if (filter === "all") return matchesSearch;
     if (filter === "approved") return matchesSearch && u.is_approved;
     if (filter === "pending") return matchesSearch && !u.is_approved;
-    const trial = getTrialStatus(u.created_at);
-    if (filter === "trial_active") return matchesSearch && !trial.expired;
-    if (filter === "trial_expired") return matchesSearch && trial.expired;
+    const trial = getTrialStatus(u.updated_at, u.is_approved);
+    if (filter === "trial_active") return matchesSearch && u.is_approved && !trial.expired;
+    if (filter === "trial_expired") return matchesSearch && u.is_approved && trial.expired;
     return matchesSearch;
   });
 
@@ -185,8 +188,8 @@ const Admin = () => {
 
   const approvedCount = users.filter(u => u.is_approved).length;
   const pendingCount = users.filter(u => !u.is_approved).length;
-  const trialActiveCount = users.filter(u => !getTrialStatus(u.created_at).expired).length;
-  const trialExpiredCount = users.filter(u => getTrialStatus(u.created_at).expired).length;
+  const trialActiveCount = users.filter(u => u.is_approved && !getTrialStatus(u.updated_at, u.is_approved).expired).length;
+  const trialExpiredCount = users.filter(u => u.is_approved && getTrialStatus(u.updated_at, u.is_approved).expired).length;
 
   return (
     <div className="min-h-screen px-4 pb-24 pt-6">
@@ -319,7 +322,7 @@ const Admin = () => {
       ) : (
         <div className="space-y-3">
           {filteredUsers.map((u) => {
-            const trial = getTrialStatus(u.created_at);
+            const trial = getTrialStatus(u.updated_at, u.is_approved);
             return (
               <div
                 key={u.id}
@@ -333,6 +336,9 @@ const Admin = () => {
                     <div>
                       <p className="font-semibold text-foreground">
                         {u.full_name || "Sem nome"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {u.email || "Sem e-mail cadastrado"}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
@@ -348,15 +354,15 @@ const Admin = () => {
                       <Badge variant={u.is_approved ? "default" : "secondary"}>
                         {u.is_approved ? "Aprovado" : "Pendente"}
                       </Badge>
-                      {trial.expired ? (
+                      {u.is_approved && trial.expired ? (
                         <Badge variant="destructive" className="text-[10px] gap-1">
                           <AlertTriangle className="h-3 w-3" /> Trial expirado
                         </Badge>
-                      ) : (
+                      ) : u.is_approved ? (
                         <Badge variant="outline" className="text-[10px] gap-1 border-primary/30 text-primary">
                           <Timer className="h-3 w-3" /> {trial.daysLeft}d restantes
                         </Badge>
-                      )}
+                      ) : null}
                     </div>
                     <Button
                       size="icon"

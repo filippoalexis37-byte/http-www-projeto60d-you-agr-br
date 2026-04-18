@@ -2,14 +2,62 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Check, Dumbbell, Play } from "lucide-react";
 import { workoutPlans, type Workout } from "@/data/workouts";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const Workouts = () => {
+  const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<string>("iniciante");
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [timer, setTimer] = useState<number>(0);
 
   const plan = workoutPlans.find((p) => p.id === selectedLevel)!;
+
+  // Simple Timer
+  import("react").then((React) => {
+    React.useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (expandedWorkout) {
+        if (!startTime) setStartTime(Date.now());
+        interval = setInterval(() => {
+          setTimer(Math.floor((Date.now() - (startTime || Date.now())) / 1000));
+        }, 1000);
+      } else {
+        setStartTime(null);
+        setTimer(0);
+      }
+      return () => clearInterval(interval);
+    }, [expandedWorkout, startTime]);
+  });
+
+  const formatTime = (s: number) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleFinishWorkout = async (workout: Workout) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase.from('completed_workouts').insert({
+        user_id: user.id,
+        workout_name: workout.focus,
+        workout_level: selectedLevel
+      });
+      if (error) throw error;
+      toast.success("Treino concluído com sucesso! Verifique suas medalhas em Evolução.");
+      setExpandedWorkout(null);
+      setCompletedExercises(new Set());
+    } catch (err) {
+      toast.error("Erro ao salvar treino.");
+      console.error(err);
+    }
+  };
 
   const toggleExercise = (exerciseKey: string) => {
     setCompletedExercises((prev) => {
@@ -27,8 +75,21 @@ const Workouts = () => {
         TREINOS
       </h1>
 
+      <div className="mt-4 rounded-xl overflow-hidden relative h-32 w-full border border-border">
+        {selectedLevel === 'gravidas' ? (
+          <img src="https://images.unsplash.com/photo-1557002664-c98ebdf2cb2a?w=800&auto=format&fit=crop&q=60" alt="Gestante Treinando" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+        ) : selectedLevel.includes('fem-') ? (
+          <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=60" alt="Mulher Treinando" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+        ) : (
+          <div className="absolute inset-0 gradient-primary opacity-20"></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+          <h2 className="text-xl font-bold text-white shadow-sm">{plan.title}</h2>
+        </div>
+      </div>
+
       {/* Level selector */}
-      <div className="mt-6 flex gap-2">
+      <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
         {workoutPlans.map((p) => (
           <button
             key={p.id}
@@ -36,13 +97,13 @@ const Workouts = () => {
               setSelectedLevel(p.id);
               setExpandedWorkout(null);
             }}
-            className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
+            className={`whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
               selectedLevel === p.id
                 ? "gradient-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground"
             }`}
           >
-            {p.level === "iniciante" ? "🔰 Iniciante" : p.level === "intermediario" ? "💪 Intermediário" : "🧠 Avançado"}
+            {p.title}
           </button>
         ))}
       </div>
@@ -76,7 +137,7 @@ const Workouts = () => {
                   <p className="font-semibold text-foreground">{workout.focus}</p>
                   <p className="text-xs text-muted-foreground">{workout.day}</p>
                 </div>
-                <span className="text-xs text-primary">
+                <span className="text-xs text-primary font-medium bg-primary/10 px-2 py-1 rounded-full">
                   {completed}/{workout.exercises.length}
                 </span>
                 <ChevronDown
@@ -93,6 +154,11 @@ const Workouts = () => {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
+                    <div className="px-4 py-2 bg-secondary/30 border-t border-border flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                        ⏱️ Tempo total: {formatTime(timer)}
+                      </span>
+                    </div>
                     <div className="space-y-2 border-t border-border px-4 py-3">
                       {workout.exercises.map((ex, i) => {
                         const key = `${workout.id}-${i}`;
@@ -157,6 +223,18 @@ const Workouts = () => {
                           </div>
                         );
                       })}
+                      
+                      {completed === workout.exercises.length && (
+                        <div className="mt-4 pb-2">
+                          <Button 
+                            onClick={() => handleFinishWorkout(workout)}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                          >
+                            <Check className="w-5 h-5 mr-2" />
+                            Finalizar Treino
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
