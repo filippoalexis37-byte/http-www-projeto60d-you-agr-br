@@ -1,10 +1,12 @@
-import { Home, Dumbbell, Salad, MessageCircle, TrendingUp, Target, Activity } from "lucide-react";
+import { Home, Dumbbell, Salad, MessageCircle, TrendingUp, Target, Activity, Pill } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const navItems = [
   { path: "/", icon: Home, label: "Início" },
   { path: "/treinos", icon: Dumbbell, label: "Treinos" },
+  { path: "/chat", icon: MessageCircle, label: "Chat IA" },
+  { path: "/suplementos", icon: Pill, label: "Suplementos" },
   { path: "/corrida", icon: Activity, label: "Corrida" },
   { path: "/dietas", icon: Salad, label: "Dietas" },
   { path: "/afiliados", icon: Target, label: "Afiliado" },

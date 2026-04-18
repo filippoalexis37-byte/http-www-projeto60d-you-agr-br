@@ -11,10 +11,10 @@ export default function Affiliates() {
 
   // Métricas mockadas para demonstração
   const stats = {
-    clicks: 145,
-    signups: 24,
-    sales: 12,
-    commission: "R$ 582,00"
+    clicks: 0,
+    signups: 0,
+    sales: 0,
+    commission: "R$ 0,00"
   };
 
   useEffect(() => {
@@ -84,17 +84,6 @@ export default function Affiliates() {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <p className="text-2xl font-bold">{stats.sales}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-xs font-medium text-gray-400 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-green-500" /> Comissão
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-bold text-green-500">{stats.commission}</p>
           </CardContent>
         </Card>
       </div>
