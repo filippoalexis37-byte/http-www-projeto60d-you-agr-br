@@ -463,5 +463,69 @@ export const workoutPlans: WorkoutPlan[] = [
         ]
       }
     ]
+  },
+  {
+    id: "home-iniciante",
+    level: "iniciante",
+    title: "Treino em Casa (Iniciante)",
+    description: "Sem equipamentos – Foco em adaptação e queima calórica",
+    frequency: "3x por semana",
+    workouts: [
+      {
+        id: "home-ini-a",
+        day: "Treino A",
+        focus: "Corpo Inteiro",
+        exercises: [
+          { name: "Polichinelos", sets: "3", reps: "30s", rest: "30s", videoUrl: "https://www.youtube.com/embed/c4DAnQ6DtF8" },
+          { name: "Agachamento Livre", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
+          { name: "Flexão de Joelhos no Chão", sets: "3", reps: "10", rest: "45s", videoUrl: "https://www.youtube.com/embed/IODxDxX7oi4" },
+          { name: "Abdominal Supra", sets: "3", reps: "20", rest: "30s", videoUrl: "https://www.youtube.com/embed/1fbU_MkV7NE" },
+          { name: "Prancha Isométrica", sets: "3", reps: "20s", rest: "30s", videoUrl: "https://www.youtube.com/embed/ASdvN_XEl_c" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "home-intermediario",
+    level: "intermediario",
+    title: "Treino em Casa (Intermediário)",
+    description: "Intensidade moderada – Resistência muscular",
+    frequency: "4x por semana",
+    workouts: [
+      {
+        id: "home-int-a",
+        day: "Treino A",
+        focus: "Membros Inferiores e Cardio",
+        exercises: [
+          { name: "Burpees", sets: "3", reps: "12", rest: "45s", videoUrl: "https://www.youtube.com/embed/dZgVxmf6jkA" },
+          { name: "Agachamento com Salto", sets: "3", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/aclHkVaku9U" },
+          { name: "Afundo", sets: "3", reps: "12 (cada perna)", rest: "45s", videoUrl: "https://www.youtube.com/embed/QOVaHwm-Q6U" },
+          { name: "Elevação Pélvica (Chão)", sets: "4", reps: "20", rest: "30s", videoUrl: "https://www.youtube.com/embed/8rYqDqI25v8" },
+          { name: "Mountain Climbers", sets: "3", reps: "40s", rest: "20s", videoUrl: "https://www.youtube.com/embed/nmwgirgXLYM" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "home-avancado",
+    level: "avancado",
+    title: "Treino em Casa (Avançado)",
+    description: "Alta intensidade e volume – Máximo condicionamento",
+    frequency: "5x por semana",
+    workouts: [
+      {
+        id: "home-adv-a",
+        day: "Treino A",
+        focus: "Full Body HIIT",
+        exercises: [
+          { name: "Sprawl (Meio Burpee)", sets: "4", reps: "45s", rest: "15s", videoUrl: "https://www.youtube.com/embed/dZgVxmf6jkA" },
+          { name: "Agachamento Búlgaro (na cadeira)", sets: "4", reps: "12 (cada perna)", rest: "30s", videoUrl: "https://www.youtube.com/embed/2z8JmcrW-As" },
+          { name: "Flexão de Braço (Explosiva)", sets: "4", reps: "15", rest: "45s", videoUrl: "https://www.youtube.com/embed/IODxDxX7oi4" },
+          { name: "Tríceps no Banco (Sofá/Cadeira)", sets: "4", reps: "15", rest: "30s", videoUrl: "https://www.youtube.com/embed/kiuVA0gs3EI" },
+          { name: "Prancha Dinâmica (Sobe/Desce)", sets: "4", reps: "45s", rest: "15s", videoUrl: "https://www.youtube.com/embed/ASdvN_XEl_c" },
+          { name: "Polichinelos Frontais", sets: "4", reps: "1 min", rest: "20s", videoUrl: "https://www.youtube.com/embed/c4DAnQ6DtF8" },
+        ]
+      }
+    ]
   }
 ];

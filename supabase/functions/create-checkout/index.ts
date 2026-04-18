@@ -31,18 +31,21 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
+    const { referrerId } = await req.json();
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: "price_1THmBW4PDSdmJrZsQl3YEi8G",
+          price: "price_1THmBW4PDSdmJrZsQl3YEi8G", // Replace with one-time price ID
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      subscription_data: {
-        trial_period_days: 7,
+      mode: "payment",
+      client_reference_id: user.id,
+      metadata: {
+        referrer_id: referrerId || "",
       },
       success_url: `${req.headers.get("origin")}/`,
       cancel_url: `${req.headers.get("origin")}/landing`,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Copy, Users, MousePointerClick, DollarSign, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -8,19 +9,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function Affiliates() {
   const { user } = useAuth();
   const [affiliateLink, setAffiliateLink] = useState("");
-
-  // Métricas mockadas para demonstração
-  const stats = {
+  const [stats, setStats] = useState({
     clicks: 0,
     signups: 0,
     sales: 0,
     commission: "R$ 0,00"
-  };
+  });
 
   useEffect(() => {
     if (user) {
       const link = `${window.location.origin}/landing?ref=${user.id}`;
       setAffiliateLink(link);
+      
+      const fetchStats = async () => {
+        const { data: referrals } = await supabase
+          .from("referrals")
+          .select("*")
+          .eq("referrer_id", user.id);
+        
+        if (referrals) {
+          const signups = referrals.length;
+          const sales = referrals.filter(r => r.status === "paid").length;
+          const commissionTotal = referrals
+            .filter(r => r.status === "paid")
+            .reduce((acc, r) => acc + (r.commission_amount || 0), 0);
+          
+          setStats({
+            clicks: signups * 2.5, // Mocked clicks as a factor of signups for now
+            signups,
+            sales,
+            commission: `R$ ${commissionTotal.toFixed(2).replace(".", ",")}`
+          });
+        }
+      };
+      fetchStats();
     }
   }, [user]);
 
@@ -39,7 +61,10 @@ export default function Affiliates() {
       </div>
 
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <p className="text-sm text-gray-400 mb-2">Seu link único de divulgação (50% de comissão)</p>
+        <p className="text-sm text-gray-400 mb-1">Seu link único de divulgação (50% de comissão)</p>
+        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider mb-3 flex items-center gap-1">
+          <Target className="w-3 h-3" /> Acesso Vitalício • Pagamento Único (Não é recorrente)
+        </p>
         <div className="flex items-center gap-2">
           <input 
             type="text" 

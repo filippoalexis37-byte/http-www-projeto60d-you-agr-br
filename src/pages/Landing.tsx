@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Flame, Dumbbell, Target, Trophy, ChevronRight, CheckCircle,
@@ -71,15 +71,26 @@ const Landing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  // Capture referral
+  useState(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("referrer_id", ref);
+    }
+  });
 
   const handleCheckout = async () => {
     if (!user) {
       navigate("/auth");
       return;
     }
-    setCheckoutLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout");
+      const referrerId = localStorage.getItem("referrer_id");
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { referrerId }
+      });
       if (error) throw error;
       if (data?.url) {
         window.open(data.url, "_blank");
@@ -193,7 +204,7 @@ const Landing = () => {
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                🎁 7 dias grátis · Depois R$ 29,90/mês · Cancele quando quiser
+                🎁 7 dias grátis · Pagamento Único · Acesso Vitalício
               </p>
             </div>
           </motion.div>
@@ -461,7 +472,7 @@ const Landing = () => {
           <div className="mt-6 rounded-xl border border-primary/40 bg-primary/5 p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">🎁 7 dias grátis para testar</p>
             <p className="text-xs text-muted-foreground line-through mt-1">De R$ 97,00/mês</p>
-            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 29,90<span className="text-lg text-muted-foreground">/mês</span></p>
+            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 97,00<span className="text-lg text-muted-foreground"> pagamento único</span></p>
             <p className="mt-1 text-xs text-muted-foreground">Após o período de teste gratuito</p>
           </div>
 

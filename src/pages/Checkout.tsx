@@ -29,20 +29,26 @@ export default function Checkout() {
 
       <div className="w-full max-w-md space-y-4 mb-8">
         <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col space-y-3">
-          <div className="flex items-center text-lg font-semibold">
-            <CreditCard className="w-5 h-5 mr-2 text-indigo-400" /> Cartão de Crédito (Stripe)
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-lg font-semibold">
+              <CreditCard className="w-5 h-5 mr-2 text-indigo-400" /> Cartão de Crédito
+            </div>
+            <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded-full font-bold">PAGAMENTO ÚNICO</span>
           </div>
-          <Button onClick={() => handleStripe('3months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Plano 3 Meses</Button>
-          <Button onClick={() => handleStripe('6months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Plano 6 Meses</Button>
-          <Button onClick={() => handleStripe('1year')} className="w-full bg-indigo-600 hover:bg-indigo-700">Plano 1 Ano</Button>
+          <Button onClick={() => handleStripe('3months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso 3 Meses</Button>
+          <Button onClick={() => handleStripe('6months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso 6 Meses</Button>
+          <Button onClick={() => handleStripe('1year')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso Vitalício (1 Ano+)</Button>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col space-y-3">
-          <div className="flex items-center text-lg font-semibold">
-            <QrCode className="w-5 h-5 mr-2 text-emerald-400" /> Pagamento via Pix
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-lg font-semibold">
+              <QrCode className="w-5 h-5 mr-2 text-emerald-400" /> Pagamento via Pix
+            </div>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full font-bold">PAGAMENTO ÚNICO</span>
           </div>
-          <p className="text-sm text-gray-400 text-center">Liberação instantânea com QR Code</p>
-          <Button onClick={handlePix} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">Gerar QR Code Pix</Button>
+          <p className="text-xs text-zinc-500 text-center uppercase font-bold">Sem mensalidades • Sem renovação automática</p>
+          <Button onClick={handlePix} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Gerar QR Code Pix</Button>
         </div>
       </div>
 

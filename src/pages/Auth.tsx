@@ -26,11 +26,15 @@ const Auth = () => {
         toast.success("Login realizado!");
         navigate("/");
       } else {
+        const referrerId = localStorage.getItem("referrer_id");
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: { 
+              full_name: fullName,
+              referrer_id: referrerId 
+            },
             emailRedirectTo: window.location.origin,
           },
         });

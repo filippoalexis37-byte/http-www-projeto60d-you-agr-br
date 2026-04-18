@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import {
   Shield, Check, X, ArrowLeft, Users, Trophy, Dumbbell,
   TrendingUp, Calendar, Search, UserCheck, UserX, Clock,
-  LogOut, LogIn, AlertTriangle, Timer, DollarSign, Target
+  LogOut, LogIn, AlertTriangle, Timer, DollarSign, Target, Copy
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -241,7 +241,7 @@ const Admin = () => {
             <Users className="h-4 w-4" /> Usuários
           </TabsTrigger>
           <TabsTrigger value="affiliates" className="gap-2">
-            <Target className="h-4 w-4" /> Vendas Afiliados
+            <Target className="h-4 w-4" /> Afiliados
           </TabsTrigger>
         </TabsList>
 
@@ -378,6 +378,12 @@ const Admin = () => {
                             <span>·</span>
                             <Dumbbell className="h-3 w-3" />
                             <span>{userWorkoutCounts[u.user_id] || 0} treinos</span>
+                            <span>·</span>
+                            <Target className="h-3 w-3 text-emerald-500" />
+                            <span className="text-emerald-500 font-medium">
+                              {/* Count sales for this user in mockSales */}
+                              {mockSales.filter(s => s.affiliate_name === u.full_name).length} vendas
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -385,6 +391,10 @@ const Admin = () => {
                         <div className="flex flex-col items-end gap-1">
                           <Badge variant={u.is_approved ? "default" : "secondary"}>
                             {u.is_approved ? "Aprovado" : "Pendente"}
+                          </Badge>
+                          {/* Affiliate Badge */}
+                          <Badge variant="outline" className="text-[10px] bg-emerald-500/10 border-emerald-500/30 text-emerald-500">
+                            Afiliado
                           </Badge>
                           {u.is_approved && trial.expired ? (
                             <Badge variant="destructive" className="text-[10px] gap-1">
@@ -396,6 +406,18 @@ const Admin = () => {
                             </Badge>
                           ) : null}
                         </div>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => {
+                            const link = `${window.location.origin}/landing?ref=${u.user_id}`;
+                            navigator.clipboard.writeText(link);
+                            toast.success("Link de afiliado copiado!");
+                          }}
+                          className="border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
                         <Button
                           size="icon"
                           variant={u.is_approved ? "destructive" : "default"}

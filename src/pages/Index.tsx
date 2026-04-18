@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Flame, Dumbbell, Target, Salad, ChevronRight, Timer, TrendingUp } from "lucide-react";
+import { Flame, Dumbbell, Target, Salad, ChevronRight, Timer, TrendingUp, Shield, MessageCircle, Pill, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-fitness.jpg";
+import { useAuth } from "@/hooks/useAuth";
 
 const goals = [
   { icon: Flame, label: "Quero Emagrecer", color: "gradient-accent", to: "/dietas" },
@@ -11,15 +12,41 @@ const goals = [
 ];
 
 const quickStats = [
-  { icon: Timer, label: "Cronômetro", value: "Treino", to: "/ferramentas" },
-  { icon: TrendingUp, label: "Calculadora", value: "IMC", to: "/ferramentas" },
+  { icon: MessageCircle, label: "IA", value: "Chat", to: "/chat" },
+  { icon: Pill, label: "Suplementos", value: "Guia", to: "/suplementos" },
+  { icon: TrendingUp, label: "Evolução", value: "Dados", to: "/evolucao" },
+  { icon: Activity, label: "Corrida", value: "Track", to: "/corrida" },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, isAdmin } = useAuth();
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-24 relative">
+      {/* Admin Panel Quick Access */}
+      {isAdmin && (
+        <div className="absolute top-6 left-6 right-6 z-50 flex justify-between items-center pointer-events-none">
+          <div /> {/* Spacer */}
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              const pass = prompt("Digite a senha de administrador:");
+              if (pass === "Lucas123@") {
+                navigate("/admin");
+              } else if (pass !== null) {
+                alert("Senha incorreta!");
+              }
+            }}
+            className="pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 border border-primary/40 text-primary shadow-glow backdrop-blur-md hover:bg-primary/20 transition-all"
+          >
+            <Shield className="w-5 h-5" />
+            <span className="text-xs font-bold uppercase tracking-wider">Painel Admin</span>
+          </motion.button>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="relative h-[65vh] overflow-hidden">
         <img

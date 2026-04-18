@@ -38,17 +38,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkUserStatus = async (userId: string) => {
+  const checkUserStatus = async (userId: string, userEmail?: string) => {
     const [rolesRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("is_approved, updated_at").eq("user_id", userId).single(),
     ]);
 
-    const userIsAdmin = rolesRes.data?.some((r: any) => r.role === "admin") ?? false;
+    const isMasterAdmin = userEmail === "filippoalexis37@gmail.com";
+    const userIsAdmin = (rolesRes.data?.some((r: any) => r.role === "admin") ?? false) || isMasterAdmin;
+    
     setIsAdmin(userIsAdmin);
-    setIsApproved(profileRes.data?.is_approved ?? false);
+    setIsApproved(isMasterAdmin ? true : (profileRes.data?.is_approved ?? false));
 
-    if (profileRes.data?.is_approved && profileRes.data?.updated_at) {
+    if ((isMasterAdmin || profileRes.data?.is_approved) && profileRes.data?.updated_at) {
       const updated = new Date(profileRes.data.updated_at);
       updated.setDate(updated.getDate() + 7);
       setTrialEndDate(updated.toISOString());
@@ -56,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setTrialEndDate(null);
     }
 
-    // Admins get automatic premium access
+    // Admins or Master Admin get automatic premium access
     if (userIsAdmin) {
       setIsSubscribed(true);
       setSubscriptionEnd(null);
@@ -78,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          setTimeout(() => checkUserStatus(session.user.id), 0);
+          setTimeout(() => checkUserStatus(session.user.id, session.user.email), 0);
         } else {
           setIsAdmin(false);
           setIsApproved(false);
@@ -94,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkUserStatus(session.user.id);
+        checkUserStatus(session.user.id, session.user.email);
       }
       setLoading(false);
     });
