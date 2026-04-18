@@ -51,18 +51,23 @@ export default function Running() {
   };
 
   const handleShare = async () => {
+    const shareText = `Corri ${distance.toFixed(2)}km em ${formatTime(time)} com pace de ${calculatePace()} no Projeto60D!`;
+    
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Meu Treino de Corrida",
-          text: `Corri ${distance.toFixed(2)}km em ${formatTime(time)} com pace de ${calculatePace()} no Projeto60D!`,
+          text: shareText,
           url: window.location.href,
         });
       } catch (err) {
         console.error(err);
+        navigator.clipboard.writeText(shareText);
+        toast.success("Texto copiado para área de transferência!");
       }
     } else {
-      toast.success("Link copiado para compartilhar!");
+      navigator.clipboard.writeText(shareText);
+      toast.success("Texto copiado para área de transferência!");
     }
   };
 
