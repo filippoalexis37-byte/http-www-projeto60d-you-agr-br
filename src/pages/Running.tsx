@@ -51,7 +51,9 @@ export default function Running() {
   // GPS State
   const [gpsStatus, setGpsStatus] = useState<"searching" | "low" | "high">("searching");
   const [coords, setCoords] = useState<{ lat: number; lng: number }[]>([]);
-  const [weeklyGoal, setWeeklyGoal] = useState(0);
+  const [weeklyGoal, setWeeklyGoal] = useState(() => {
+    return Number(localStorage.getItem("running_weekly_goal") || 0);
+  });
   const [weeklyProgress, setWeeklyProgress] = useState(0);
   const watchId = useRef<number | null>(null);
   const lastCoord = useRef<{ lat: number; lng: number } | null>(null);
@@ -66,8 +68,12 @@ export default function Running() {
       if (!user) return;
       
       // Fetch Goal
-      const { data: goalData } = await supabase.from("running_goals").select("weekly_distance_goal").eq("user_id", user.id).single();
-      if (goalData) setWeeklyGoal(Number(goalData.weekly_distance_goal));
+      const { data: goalData } = await supabase.from("running_goals").select("weekly_distance_goal").eq("user_id", user.id).maybeSingle();
+      if (goalData) {
+        setWeeklyGoal(Number(goalData.weekly_distance_goal));
+        localStorage.setItem("running_weekly_goal", goalData.weekly_distance_goal.toString());
+      }
+// ...
       
       // Fetch this week's runs
       const startOfWeek = new Date();
@@ -156,17 +162,25 @@ export default function Running() {
   }, []);
 
   const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useState({
-    autoPause: false,
-    voiceVolume: 0.8,
-    voiceIntervalKm: 1,
-    voiceIntervalMin: 5,
-    feedbackDistance: true,
-    feedbackCalories: true,
-    feedbackDuration: true,
-    feedbackPace: true,
-    unit: 'km'
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem("running_settings");
+    return saved ? JSON.parse(saved) : {
+      autoPause: false,
+      voiceVolume: 0.8,
+      voiceIntervalKm: 1,
+      voiceIntervalMin: 5,
+      feedbackDistance: true,
+      feedbackCalories: true,
+      feedbackDuration: true,
+      feedbackPace: true,
+      unit: 'km'
+    };
   });
+
+  // Persist settings
+  useEffect(() => {
+    localStorage.setItem("running_settings", JSON.stringify(settings));
+  }, [settings]);
 
   const lastAnnouncedKm = useRef(0);
 
@@ -553,6 +567,7 @@ export default function Running() {
                   if (g) {
                     const val = parseFloat(g);
                     setWeeklyGoal(val);
+                    localStorage.setItem("running_weekly_goal", val.toString());
                     supabase.from("running_goals").upsert({ user_id: user?.id, weekly_distance_goal: val }).then();
                     toast.success("Meta semanal atualizada!");
                   }
