@@ -12,7 +12,8 @@ import {
   X,
   Signal,
   SignalHigh,
-  SignalLow
+  SignalLow,
+  ChevronRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,24 +54,32 @@ export default function Running() {
   const startTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch Weekly Goal
+  const [weeklyRuns, setWeeklyRuns] = useState<{ workout_name: string; completed_at: string }[]>([]);
+
+  // Fetch Weekly Goal and Runs
   useEffect(() => {
-    const fetchGoal = async () => {
+    const fetchData = async () => {
       if (!user) return;
-      const { data } = await supabase.from("running_goals").select("weekly_distance_goal").eq("user_id", user.id).single();
-      if (data) setWeeklyGoal(Number(data.weekly_distance_goal));
+      
+      // Fetch Goal
+      const { data: goalData } = await supabase.from("running_goals").select("weekly_distance_goal").eq("user_id", user.id).single();
+      if (goalData) setWeeklyGoal(Number(goalData.weekly_distance_goal));
       
       // Fetch this week's runs
       const startOfWeek = new Date();
       startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
       const { data: runs } = await supabase
         .from("completed_workouts")
-        .select("workout_name")
+        .select("workout_name, completed_at")
         .eq("user_id", user.id)
         .gte("completed_at", startOfWeek.toISOString())
-        .ilike("workout_name", "Corrida%");
+        .ilike("workout_name", "Corrida%")
+        .order("completed_at", { ascending: false });
       
       if (runs) {
+        setWeeklyRuns(runs);
         const total = runs.reduce((acc, run) => {
           const match = run.workout_name.match(/(\d+\.\d+)km/);
           return acc + (match ? parseFloat(match[1]) : 0);
@@ -78,7 +87,7 @@ export default function Running() {
         setWeeklyProgress(total);
       }
     };
-    fetchGoal();
+    fetchData();
   }, [user]);
 
   // Helper to draw the path on an SVG
@@ -392,6 +401,31 @@ export default function Running() {
                 <span className="text-4xl font-black tabular-nums group-hover:text-[#4ade80] transition-colors">{weeklyGoal}</span>
                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Meta Semanal</span>
              </button>
+          </div>
+        </div>
+
+        {/* Weekly History List */}
+        <div className="w-full max-w-sm mt-8 px-2 overflow-hidden">
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3">Treinos desta semana</p>
+          <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+            {weeklyRuns.length === 0 ? (
+              <p className="text-[10px] text-zinc-600 font-bold italic">Nenhuma corrida registrada esta semana.</p>
+            ) : (
+              weeklyRuns.map((run, i) => (
+                <div key={i} className="flex items-center justify-between bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#4ade80]/10 flex items-center justify-center">
+                      <Activity className="w-4 h-4 text-[#4ade80]" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black tracking-tight">{run.workout_name}</p>
+                      <p className="text-[9px] text-zinc-500 font-bold uppercase">{new Date(run.completed_at).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-700" />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
