@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Send, Bot, User, Loader2, Lightbulb } from "lucide-react";
+import { MessageCircle, Send, Bot, User, Loader2, Lightbulb, Mic, MicOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 interface Message {
   role: "user" | "assistant";
@@ -24,11 +25,61 @@ const FitnessChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // Speech Recognition Setup
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = "pt-BR";
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        setIsListening(false);
+        toast.success("Voz reconhecida!");
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+        toast.error("Erro ao reconhecer voz. Tente novamente.");
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      if (!recognitionRef.current) {
+        toast.error("Seu navegador não suporta reconhecimento de voz.");
+        return;
+      }
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+        toast.info("Ouvindo...");
+      } catch (err) {
+        console.error("Start error:", err);
+        setIsListening(false);
+      }
+    }
+  };
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -163,15 +214,24 @@ const FitnessChat = () => {
 
       {/* Input */}
       <div className="mt-3 flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
-          placeholder="Pergunte sobre treino, dieta..."
-          className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:border-primary"
-          disabled={loading}
-        />
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
+            placeholder={isListening ? "Ouvindo..." : "Pergunte sobre treino..."}
+            className={`w-full rounded-xl border border-border bg-card pl-4 pr-12 py-3 text-sm text-foreground outline-none focus:border-primary transition-all ${isListening ? "border-primary ring-1 ring-primary/20" : ""}`}
+            disabled={loading}
+          />
+          <button
+            onClick={toggleListening}
+            disabled={loading}
+            className={`absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg transition-all ${isListening ? "bg-primary text-primary-foreground animate-pulse" : "text-muted-foreground hover:bg-secondary"}`}
+          >
+            {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+          </button>
+        </div>
         <button
           onClick={() => sendMessage(input)}
           disabled={!input.trim() || loading}
