@@ -13,7 +13,11 @@ import {
   Signal,
   SignalHigh,
   SignalLow,
-  ChevronRight
+  ChevronRight,
+  Volume2,
+  VolumeX,
+  PauseCircle,
+  Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -151,10 +155,51 @@ export default function Running() {
     };
   }, []);
 
+  const [showSettings, setShowSettings] = useState(false);
+  const [settings, setSettings] = useState({
+    autoPause: false,
+    voiceVolume: 0.8,
+    voiceIntervalKm: 1,
+    voiceIntervalMin: 5,
+    feedbackDistance: true,
+    feedbackCalories: true,
+    feedbackDuration: true,
+    feedbackPace: true,
+    unit: 'km'
+  });
+
+  const lastAnnouncedKm = useRef(0);
+
+  const speak = (text: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel(); // Stop current speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.volume = settings.voiceVolume;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // GPS Watch logic update with voice feedback
+  useEffect(() => {
+    if (isRunning && distance > 0) {
+      const currentKm = Math.floor(distance);
+      if (currentKm > lastAnnouncedKm.current) {
+        lastAnnouncedKm.current = currentKm;
+        
+        let feedback = `${currentKm} quilômetros concluídos.`;
+        if (settings.feedbackDuration) feedback += ` Tempo: ${formatTime(time)}.`;
+        if (settings.feedbackPace) feedback += ` Ritmo de ${pace}.`;
+        
+        speak(feedback);
+      }
+    }
+  }, [distance, isRunning, settings]);
+
   const startTracking = () => {
     if ("geolocation" in navigator) {
       setIsRunning(true);
       setIsFinished(false);
+      lastAnnouncedKm.current = 0;
       startTimeRef.current = Date.now() - (time * 1000);
       
       // Timer Interval
@@ -453,20 +498,156 @@ export default function Running() {
         </motion.button>
 
         <button 
-          onClick={() => {
-            const g = prompt("Qual sua meta semanal de corrida em KM?", weeklyGoal.toString());
-            if (g) {
-              const val = parseFloat(g);
-              setWeeklyGoal(val);
-              supabase.from("running_goals").upsert({ user_id: user?.id, weekly_distance_goal: val }).then();
-              toast.success("Meta semanal atualizada!");
-            }
-          }}
+          onClick={() => setShowSettings(true)}
           className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
         >
           <Settings className="w-6 h-6" />
         </button>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[100] bg-zinc-950 overflow-y-auto custom-scrollbar">
+          <div className="sticky top-0 bg-zinc-950/80 backdrop-blur-md z-10 p-6 flex items-center justify-between border-b border-zinc-900">
+            <button onClick={() => setShowSettings(false)} className="text-zinc-400">
+              <ChevronRight className="w-6 h-6 rotate-180" />
+            </button>
+            <h2 className="font-display text-lg tracking-widest text-white">DEFINIÇÕES</h2>
+            <div className="w-6" />
+          </div>
+
+          <div className="p-6 space-y-8">
+            {/* Weekly Goal in Settings too */}
+            <div className="space-y-4">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Objetivos</p>
+              <div 
+                onClick={() => {
+                  const g = prompt("Qual sua meta semanal de corrida em KM?", weeklyGoal.toString());
+                  if (g) {
+                    const val = parseFloat(g);
+                    setWeeklyGoal(val);
+                    supabase.from("running_goals").upsert({ user_id: user?.id, weekly_distance_goal: val }).then();
+                    toast.success("Meta semanal atualizada!");
+                  }
+                }}
+                className="flex items-center justify-between bg-zinc-900/50 p-4 rounded-xl border border-zinc-800"
+              >
+                <span className="text-sm font-bold text-zinc-300">Meta Semanal</span>
+                <div className="flex items-center gap-2 text-primary font-bold">
+                  <span>{weeklyGoal} km</span>
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-zinc-900" />
+
+            {/* Auto Pause */}
+            <div className="flex items-center justify-between group">
+              <span className="text-sm font-bold text-zinc-300">Pausa automática</span>
+              <button 
+                onClick={() => setSettings(s => ({ ...s, autoPause: !s.autoPause }))}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.autoPause ? 'bg-primary' : 'bg-zinc-800'}`}
+              >
+                <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${settings.autoPause ? 'translate-x-6' : ''}`} />
+              </button>
+            </div>
+
+            <hr className="border-zinc-900" />
+
+            {/* Volume */}
+            <div className="space-y-4">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Volume</p>
+              <div className="flex items-center gap-4">
+                <VolumeX className="w-4 h-4 text-zinc-500" />
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.1" 
+                  value={settings.voiceVolume}
+                  onChange={(e) => setSettings(s => ({ ...s, voiceVolume: parseFloat(e.target.value) }))}
+                  className="flex-1 accent-primary bg-zinc-800 h-1 rounded-lg appearance-none"
+                />
+                <Volume2 className="w-4 h-4 text-primary" />
+              </div>
+            </div>
+
+            <hr className="border-zinc-900" />
+
+            {/* Intervals */}
+            <div className="space-y-6">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Intervalo do feedback de voz</p>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-4 h-4 text-zinc-500" />
+                  <span className="text-sm font-bold text-zinc-300">Duração</span>
+                </div>
+                <div className="flex items-center gap-2 text-zinc-500">
+                  <span className="text-sm font-bold">{settings.voiceIntervalMin} minutos</span>
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Activity className="w-4 h-4 text-zinc-500" />
+                  <span className="text-sm font-bold text-zinc-300">Distância</span>
+                </div>
+                <div className="flex items-center gap-2 text-zinc-500">
+                  <span className="text-sm font-bold">{settings.voiceIntervalKm} km</span>
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-zinc-900" />
+
+            {/* Feedback Toggles */}
+            <div className="space-y-6">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Feedback de voz</p>
+              
+              {[
+                { label: 'Distância', key: 'feedbackDistance' },
+                { label: 'Calorias', key: 'feedbackCalories' },
+                { label: 'Duração', key: 'feedbackDuration' },
+                { label: 'Ritmo', key: 'feedbackPace' }
+              ].map((item) => (
+                <div key={item.key} className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-zinc-300">{item.label}</span>
+                  <button 
+                    onClick={() => setSettings(s => ({ ...s, [item.key]: !s[item.key as keyof typeof s] }))}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${settings[item.key as keyof typeof settings] ? 'bg-primary' : 'bg-zinc-800'}`}
+                  >
+                    <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${settings[item.key as keyof typeof settings] ? 'translate-x-6' : ''}`} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <hr className="border-zinc-900" />
+
+            {/* Units */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-zinc-300">Unidades Métricas</span>
+              <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                <span>km</span>
+                <ChevronRight className="w-4 h-4 text-zinc-500" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <button 
+              onClick={() => setShowSettings(false)}
+              className="w-full py-4 rounded-xl bg-primary text-black font-black uppercase tracking-widest shadow-glow"
+            >
+              Concluir
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Finished Modal */}
       <AnimatePresence>
