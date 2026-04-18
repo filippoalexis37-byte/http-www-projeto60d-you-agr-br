@@ -418,7 +418,18 @@ export default function Running() {
           )}
         </motion.button>
 
-        <button className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+        <button 
+          onClick={() => {
+            const g = prompt("Qual sua meta semanal de corrida em KM?", weeklyGoal.toString());
+            if (g) {
+              const val = parseFloat(g);
+              setWeeklyGoal(val);
+              supabase.from("running_goals").upsert({ user_id: user?.id, weekly_distance_goal: val }).then();
+              toast.success("Meta semanal atualizada!");
+            }
+          }}
+          className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+        >
           <Settings className="w-6 h-6" />
         </button>
       </div>
