@@ -392,8 +392,8 @@ const Admin = () => {
                             <span>·</span>
                             <Target className="h-3 w-3 text-emerald-500" />
                             <span className="text-emerald-500 font-medium">
-                              {/* Count sales for this user in mockSales */}
-                              {mockSales.filter(s => s.affiliate_name === u.full_name).length} vendas
+                              {/* Count sales for this user in realSales */}
+                              {realSales.filter(s => s.referrer_id === u.user_id).length} vendas
                             </span>
                           </div>
                         </div>
