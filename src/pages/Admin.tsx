@@ -32,12 +32,7 @@ interface AffiliateSale {
   date: string;
 }
 
-const mockSales: AffiliateSale[] = [
-  { id: "1", affiliate_name: "João Silva", customer_name: "Maria Oliveira", amount: 97.00, commission: 48.50, date: "2024-04-18" },
-  { id: "2", affiliate_name: "Ana Costa", customer_name: "Pedro Santos", amount: 147.00, commission: 73.50, date: "2024-04-17" },
-  { id: "3", affiliate_name: "João Silva", customer_name: "Lucas Lima", amount: 97.00, commission: 48.50, date: "2024-04-16" },
-  { id: "4", affiliate_name: "Ricardo Souza", customer_name: "Carla Mendes", amount: 197.00, commission: 98.50, date: "2024-04-15" },
-];
+// Real sales will be fetched from the database
 
 interface WorkoutStats {
   total: number;
@@ -71,6 +66,7 @@ const Admin = () => {
   const [workoutStats, setWorkoutStats] = useState<WorkoutStats>({ total: 0, today: 0, thisWeek: 0 });
   const [medalStats, setMedalStats] = useState<MedalStats>({ total: 0, bronze: 0, silver: 0, gold: 0 });
   const [userWorkoutCounts, setUserWorkoutCounts] = useState<Record<string, number>>({});
+  const [realSales, setRealSales] = useState<any[]>([]);
 
   const fetchUsers = async () => {
     const { data, error } = await supabase
@@ -117,10 +113,25 @@ const Admin = () => {
     setUserWorkoutCounts(counts);
   };
 
+  const fetchRealSales = async () => {
+    const { data } = await supabase
+      .from("referrals")
+      .select(`
+        *,
+        referrer:profiles!referrals_referrer_id_fkey(full_name),
+        referred:profiles!referrals_referred_user_id_fkey(full_name)
+      `)
+      .eq("status", "paid")
+      .order("created_at", { ascending: false });
+    
+    if (data) setRealSales(data);
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchUsers();
       fetchStats();
+      fetchRealSales();
     }
   }, [isAdmin]);
 
@@ -209,8 +220,8 @@ const Admin = () => {
   const trialActiveCount = users.filter(u => u.is_approved && !getTrialStatus(u.updated_at, u.is_approved).expired).length;
   const trialExpiredCount = users.filter(u => u.is_approved && getTrialStatus(u.updated_at, u.is_approved).expired).length;
 
-  const totalSales = mockSales.reduce((acc, sale) => acc + sale.amount, 0);
-  const totalCommission = mockSales.reduce((acc, sale) => acc + sale.commission, 0);
+  const totalSales = realSales.reduce((acc, sale) => acc + (sale.sale_amount || 0), 0);
+  const totalCommission = realSales.reduce((acc, sale) => acc + (sale.commission_amount || 0), 0);
 
   return (
     <div className="min-h-screen px-4 pb-24 pt-6">
@@ -471,14 +482,20 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {mockSales.map((sale) => (
-                  <tr key={sale.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-4 font-medium">{sale.affiliate_name}</td>
-                    <td className="px-4 py-4 text-muted-foreground">{sale.customer_name}</td>
-                    <td className="px-4 py-4 text-right">R$ {sale.amount.toFixed(2)}</td>
-                    <td className="px-4 py-4 text-right font-semibold text-emerald-500">R$ {sale.commission.toFixed(2)}</td>
+                {realSales.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">Nenhuma venda realizada ainda.</td>
                   </tr>
-                ))}
+                ) : (
+                  realSales.map((sale) => (
+                    <tr key={sale.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-4 font-medium">{sale.referrer?.full_name || "N/A"}</td>
+                      <td className="px-4 py-4 text-muted-foreground">{sale.referred?.full_name || "N/A"}</td>
+                      <td className="px-4 py-4 text-right">R$ {(sale.sale_amount || 0).toFixed(2)}</td>
+                      <td className="px-4 py-4 text-right font-semibold text-emerald-500">R$ {(sale.commission_amount || 0).toFixed(2)}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
