@@ -45,8 +45,19 @@ export default function Running() {
   // Stats
   const [time, setTime] = useState(0); // seconds
   const [distance, setDistance] = useState(0); // km
-  const [pace, setPace] = useState("00:00");
-  const [calories, setCalories] = useState(0);
+  // Derived Stats
+  const calories = Math.floor(distance * 65);
+  let pace = "00:00";
+  if (distance > 0.01 && time > 0) {
+    const paceSeconds = time / distance;
+    const pM = Math.floor(paceSeconds / 60);
+    const pS = Math.floor(paceSeconds % 60);
+    if (pM < 60) {
+      pace = `${pM.toString().padStart(2, "0")}:${pS.toString().padStart(2, "0")}`;
+    } else {
+      pace = "--:--";
+    }
+  }
   
   // GPS State
   const [gpsStatus, setGpsStatus] = useState<"searching" | "low" | "high">("searching");
@@ -249,24 +260,7 @@ export default function Running() {
             if (d > 0.002) {
               setDistance((prev) => {
                 const newDist = prev + d;
-                // Calculate pace
-                if (newDist > 0.01) { // Only calculate pace after 10m to avoid spikes
-                  const currentSeconds = (Date.now() - (startTimeRef.current || Date.now())) / 1000;
-                  const paceSeconds = currentSeconds / newDist;
-                  const pM = Math.floor(paceSeconds / 60);
-                  const pS = Math.floor(paceSeconds % 60);
-                  
-                  // Sanity check: if pace is > 20 min/km, it's probably walking/stopped
-                  if (pM < 20) {
-                    setPace(`${pM.toString().padStart(2, "0")}:${pS.toString().padStart(2, "0")}`);
-                  } else {
-                    setPace("--:--");
-                  }
-                } else {
-                  setPace("00:00");
-                }
-                // Calculate calories (approx 65 kcal per km)
-                setCalories(Math.floor(newDist * 65));
+
                 return newDist;
               });
               lastCoord.current = { lat: latitude, lng: longitude };
@@ -309,8 +303,7 @@ export default function Running() {
   const resetStats = () => {
     setTime(0);
     setDistance(0);
-    setPace("00:00");
-    setCalories(0);
+
     setCoords([]);
     lastCoord.current = null;
     setIsFinished(false);
