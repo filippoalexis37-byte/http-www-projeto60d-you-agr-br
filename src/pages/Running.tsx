@@ -246,7 +246,7 @@ export default function Running() {
             );
             
             // Only add distance if move is significant (avoid jitter)
-            if (d > 0.005) {
+            if (d > 0.002) {
               setDistance((prev) => {
                 const newDist = prev + d;
                 // Calculate pace
@@ -284,8 +284,8 @@ export default function Running() {
         },
         {
           enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
+          timeout: 10000,
+          maximumAge: 1000
         }
       );
     } else {
@@ -364,6 +364,10 @@ export default function Running() {
       const { error } = await supabase.from("completed_workouts").insert(runData);
       if (error) throw error;
       toast.success("Corrida salva com sucesso!");
+      
+      setWeeklyRuns(prev => [{ workout_name: runData.workout_name, completed_at: runData.completed_at }, ...prev]);
+      setWeeklyProgress(prev => prev + distance);
+      
       resetStats();
     } catch (err) {
       console.error(err);
@@ -492,10 +496,10 @@ export default function Running() {
 
         {/* Weekly History List */}
         <div className="w-full max-w-sm mt-8 px-2 overflow-hidden">
-          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3">Treinos desta semana</p>
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3">Histórico de Corridas</p>
           <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
             {weeklyRuns.length === 0 ? (
-              <p className="text-[10px] text-zinc-600 font-bold italic">Nenhuma corrida registrada esta semana.</p>
+              <p className="text-[10px] text-zinc-600 font-bold italic">Nenhuma corrida registrada.</p>
             ) : (
               weeklyRuns.map((run, i) => (
                 <div key={i} className="flex items-center justify-between bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-3 backdrop-blur-sm">
