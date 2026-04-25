@@ -355,7 +355,7 @@ export default function Running() {
     if (!user) return;
     const runData = {
       user_id: user.id,
-      workout_name: `Corrida ${distance.toFixed(2)}km`,
+      workout_name: `Corrida ${distance.toFixed(2)}km | ${formatTime(time)} | Pace: ${pace} | ${calories} kcal`,
       workout_level: "cardio",
       completed_at: new Date().toISOString()
     };
