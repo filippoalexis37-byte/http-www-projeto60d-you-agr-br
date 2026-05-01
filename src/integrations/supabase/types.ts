@@ -101,6 +101,60 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          commission_amount: number | null
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          commission_amount?: number | null
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          commission_amount?: number | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      running_goals: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          weekly_distance_goal: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          weekly_distance_goal?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weekly_distance_goal?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

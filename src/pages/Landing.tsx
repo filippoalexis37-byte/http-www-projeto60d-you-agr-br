@@ -220,6 +220,32 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Video Showcase */}
+      <section className="px-6 py-16 bg-card/30">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <h2 className="font-display text-3xl tracking-wider text-foreground sm:text-4xl">
+            VEJA O <span className="text-primary text-glow">PROJETO 60D</span> EM AÇÃO
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Conheça o app que vai transformar seu corpo e sua mentalidade
+          </p>
+          <div className="mt-8 overflow-hidden rounded-2xl border border-primary/20 box-glow">
+            <video
+              src="/landing-video.mp4"
+              controls
+              playsInline
+              className="w-full h-auto bg-black"
+            />
+          </div>
+        </motion.div>
+      </section>
+
       {/* Stats bar */}
       <section className="border-y border-border bg-card/50 py-8">
         <div className="mx-auto grid max-w-lg grid-cols-2 gap-6 px-6 sm:grid-cols-4">
