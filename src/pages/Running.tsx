@@ -489,25 +489,49 @@ export default function Running() {
 
         {/* Weekly History List */}
         <div className="w-full max-w-sm mt-8 px-2 overflow-hidden">
-          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3">Histórico de Corridas</p>
-          <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Corridas da Semana</p>
+            <p className="text-[10px] font-black text-[#4ade80] uppercase tracking-[0.2em]">{weeklyRuns.length} {weeklyRuns.length === 1 ? "treino" : "treinos"}</p>
+          </div>
+          <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
             {weeklyRuns.length === 0 ? (
-              <p className="text-[10px] text-zinc-600 font-bold italic">Nenhuma corrida registrada.</p>
+              <p className="text-[10px] text-zinc-600 font-bold italic text-center py-4">Nenhuma corrida esta semana. Comece agora!</p>
             ) : (
-              weeklyRuns.map((run, i) => (
-                <div key={i} className="flex items-center justify-between bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-3 backdrop-blur-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#4ade80]/10 flex items-center justify-center">
-                      <Activity className="w-4 h-4 text-[#4ade80]" />
+              weeklyRuns.map((run, i) => {
+                const distMatch = run.workout_name.match(/(\d+\.\d+)\s*km/i);
+                const timeMatch = run.workout_name.match(/\|\s*(\d{1,2}:\d{2}(?::\d{2})?)/);
+                const paceMatch = run.workout_name.match(/Pace:\s*([\d:]+)/i);
+                const kcalMatch = run.workout_name.match(/(\d+)\s*kcal/i);
+                return (
+                  <div key={i} className="bg-zinc-900/60 border border-zinc-800/60 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-[#4ade80]/10 flex items-center justify-center">
+                          <Activity className="w-3.5 h-3.5 text-[#4ade80]" />
+                        </div>
+                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+                          {new Date(run.completed_at).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}
+                        </p>
+                      </div>
+                      <p className="text-base font-black tabular-nums text-white">{distMatch ? `${distMatch[1]} km` : "—"}</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-black tracking-tight">{run.workout_name}</p>
-                      <p className="text-[9px] text-zinc-500 font-bold uppercase">{new Date(run.completed_at).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</p>
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800/60">
+                      <div className="text-center">
+                        <p className="text-[9px] text-zinc-500 font-bold uppercase">Tempo</p>
+                        <p className="text-xs font-black tabular-nums text-zinc-200">{timeMatch ? timeMatch[1] : "—"}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[9px] text-zinc-500 font-bold uppercase">Pace</p>
+                        <p className="text-xs font-black tabular-nums text-[#4ade80]">{paceMatch ? paceMatch[1] : "—"}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[9px] text-zinc-500 font-bold uppercase">Kcal</p>
+                        <p className="text-xs font-black tabular-nums text-zinc-200">{kcalMatch ? kcalMatch[1] : "—"}</p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-700" />
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
