@@ -487,8 +487,8 @@ const Landing = () => {
           <div className="mt-6 rounded-xl border border-primary/40 bg-primary/5 p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">🎁 7 dias grátis para testar</p>
             <p className="text-xs text-muted-foreground line-through mt-1">De R$ 97,00/mês</p>
-            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 97,00<span className="text-lg text-muted-foreground"> pagamento único</span></p>
-            <p className="mt-1 text-xs text-muted-foreground">Após o período de teste gratuito</p>
+            <p className="mt-1 font-display text-4xl text-primary text-glow">R$ 29,90<span className="text-lg text-muted-foreground">/mês</span></p>
+            <p className="mt-1 text-xs text-muted-foreground">Cobrado após o período de teste gratuito · Cancele quando quiser</p>
           </div>
 
           <Button
