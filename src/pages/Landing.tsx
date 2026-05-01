@@ -81,25 +81,14 @@ const Landing = () => {
     }
   });
 
+  const HOTMART_URL = "https://pay.hotmart.com/E98949409P";
+
   const handleCheckout = async () => {
     if (!user) {
       navigate("/auth");
       return;
     }
-    try {
-      const referrerId = localStorage.getItem("referrer_id");
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { referrerId }
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (err: any) {
-      toast({ title: "Erro", description: "Não foi possível iniciar o pagamento.", variant: "destructive" });
-    } finally {
-      setCheckoutLoading(false);
-    }
+    window.open(HOTMART_URL, "_blank");
   };
 
   return (
@@ -204,7 +193,7 @@ const Landing = () => {
                 COMEÇAR AGORA <ChevronRight className="ml-1 h-6 w-6" />
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
-                🎁 7 dias grátis · Pagamento Único · Acesso Vitalício
+                🎁 7 dias grátis · Apenas <strong className="text-primary">R$ 29,90/mês</strong> · Cancele quando quiser
               </p>
             </div>
           </motion.div>
