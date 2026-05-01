@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, CreditCard, QrCode, Lock } from "lucide-react";
+import { LogOut, Lock, ExternalLink, CheckCircle } from "lucide-react";
 import { Navigate } from "react-router-dom";
 
 export default function Checkout() {
@@ -10,13 +10,10 @@ export default function Checkout() {
   if (!isApproved) return <Navigate to="/pending" replace />;
   if (isSubscribed) return <Navigate to="/" replace />;
 
-  const handleStripe = async (planType: string) => {
-    // Integração futura com o Supabase edge function create-checkout
-    alert(`Iniciando pagamento Stripe para o plano: ${planType}`);
-  };
+  const HOTMART_URL = "https://pay.hotmart.com/E98949409P";
 
-  const handlePix = () => {
-    alert("Chave Pix CNPJ: 62.485.678/0001-69. (O QR Code dinâmico será gerado na integração oficial)");
+  const handleHotmart = () => {
+    window.open(HOTMART_URL, "_blank");
   };
 
   return (
@@ -24,31 +21,29 @@ export default function Checkout() {
       <Lock className="w-16 h-16 text-rose-500 mb-6" />
       <h1 className="text-2xl font-bold mb-2">Período de Teste Encerrado</h1>
       <p className="text-gray-400 mb-8 text-center max-w-md">
-        Seus 7 dias gratuitos chegaram ao fim. Escolha um dos planos abaixo para continuar tendo acesso a todos os treinos, dietas e ferramentas.
+        Seus 7 dias gratuitos chegaram ao fim. Continue sua transformação com acesso completo a todos os treinos, dietas, assistente de IA e ferramentas.
       </p>
 
-      <div className="w-full max-w-md space-y-4 mb-8">
-        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center text-lg font-semibold">
-              <CreditCard className="w-5 h-5 mr-2 text-indigo-400" /> Cartão de Crédito
-            </div>
-            <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded-full font-bold">PAGAMENTO ÚNICO</span>
+      <div className="w-full max-w-md mb-8">
+        <div className="bg-gradient-to-br from-primary/20 to-zinc-900 border border-primary/40 p-6 rounded-2xl flex flex-col space-y-4 shadow-[0_0_40px_rgba(74,222,128,0.15)]">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary">Plano Mensal</p>
+            <p className="mt-2 text-5xl font-black text-white">R$ 29,90<span className="text-base font-normal text-zinc-400">/mês</span></p>
+            <p className="mt-1 text-xs text-zinc-400">Cancele quando quiser</p>
           </div>
-          <Button onClick={() => handleStripe('3months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso 3 Meses</Button>
-          <Button onClick={() => handleStripe('6months')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso 6 Meses</Button>
-          <Button onClick={() => handleStripe('1year')} className="w-full bg-indigo-600 hover:bg-indigo-700">Acesso Vitalício (1 Ano+)</Button>
-        </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center text-lg font-semibold">
-              <QrCode className="w-5 h-5 mr-2 text-emerald-400" /> Pagamento via Pix
-            </div>
-            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full font-bold">PAGAMENTO ÚNICO</span>
-          </div>
-          <p className="text-xs text-zinc-500 text-center uppercase font-bold">Sem mensalidades • Sem renovação automática</p>
-          <Button onClick={handlePix} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Gerar QR Code Pix</Button>
+          <ul className="space-y-2 text-sm text-zinc-300">
+            <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary shrink-0" /> Treinos completos com vídeo</li>
+            <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary shrink-0" /> Dietas personalizadas + receitas</li>
+            <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary shrink-0" /> Assistente Virtual IA 24h</li>
+            <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary shrink-0" /> Cronômetro de corrida com GPS</li>
+            <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary shrink-0" /> Mentalidade, suplementos e mais</li>
+          </ul>
+
+          <Button onClick={handleHotmart} className="w-full bg-primary hover:bg-primary/90 text-black font-black h-14 text-base uppercase tracking-wider">
+            Assinar agora <ExternalLink className="w-4 h-4 ml-1" />
+          </Button>
+          <p className="text-[10px] text-zinc-500 text-center uppercase font-bold">Pagamento seguro via Hotmart</p>
         </div>
       </div>
 
