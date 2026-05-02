@@ -23,6 +23,17 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
 // Helper: Haversine distance in KM
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -72,6 +83,51 @@ export default function Running() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [weeklyRuns, setWeeklyRuns] = useState<{ workout_name: string; completed_at: string }[]>([]);
+
+  // Build weekly chart data: aggregate by weekday (Sun..Sat)
+  const weekdayLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const chartData = (() => {
+    const buckets: { day: string; paceSec: number; timeMin: number; count: number; distance: number }[] =
+      weekdayLabels.map((d) => ({ day: d, paceSec: 0, timeMin: 0, count: 0, distance: 0 }));
+
+    weeklyRuns.forEach((run) => {
+      const dayIdx = new Date(run.completed_at).getDay();
+      const distMatch = run.workout_name.match(/(\d+\.\d+)\s*km/i);
+      const timeMatch = run.workout_name.match(/\|\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      const paceMatch = run.workout_name.match(/Pace:\s*(\d{1,2}):(\d{2})/i);
+
+      const dist = distMatch ? parseFloat(distMatch[1]) : 0;
+      let timeSec = 0;
+      if (timeMatch) {
+        const a = parseInt(timeMatch[1], 10);
+        const b = parseInt(timeMatch[2], 10);
+        const c = timeMatch[3] ? parseInt(timeMatch[3], 10) : 0;
+        timeSec = timeMatch[3] ? a * 3600 + b * 60 + c : a * 60 + b;
+      }
+      const paceSec = paceMatch ? parseInt(paceMatch[1], 10) * 60 + parseInt(paceMatch[2], 10) : 0;
+
+      const b = buckets[dayIdx];
+      b.paceSec += paceSec;
+      b.timeMin += timeSec / 60;
+      b.distance += dist;
+      b.count += 1;
+    });
+
+    return buckets.map((b) => ({
+      day: b.day,
+      pace: b.count > 0 ? +(b.paceSec / b.count / 60).toFixed(2) : 0, // min/km (decimal)
+      tempo: +b.timeMin.toFixed(1), // total min that day
+      distancia: +b.distance.toFixed(2),
+    }));
+  })();
+
+  const formatPaceTick = (v: number) => {
+    if (!v) return "0";
+    const m = Math.floor(v);
+    const s = Math.round((v - m) * 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+  const hasChartData = chartData.some((d) => d.tempo > 0);
 
   // Fetch Weekly Goal and Runs
   useEffect(() => {
@@ -489,6 +545,74 @@ export default function Running() {
 
         {/* Weekly History List */}
         <div className="w-full max-w-sm mt-8 px-2 overflow-hidden">
+          {/* Weekly Chart: Pace vs Tempo */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Evolução Semanal</p>
+              <p className="text-[10px] font-black text-[#4ade80] uppercase tracking-[0.2em]">Pace × Tempo</p>
+            </div>
+            <div className="bg-zinc-900/60 border border-zinc-800/60 rounded-xl p-3 backdrop-blur-sm h-56">
+              {hasChartData ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                    <XAxis dataKey="day" tick={{ fill: "#a1a1aa", fontSize: 10, fontWeight: 700 }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      yAxisId="left"
+                      tick={{ fill: "#a1a1aa", fontSize: 9 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={40}
+                      label={{ value: "min", angle: -90, position: "insideLeft", fill: "#52525b", fontSize: 9, dy: 10 }}
+                    />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      tick={{ fill: "#4ade80", fontSize: 9 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={formatPaceTick}
+                      width={36}
+                      reversed
+                    />
+                    <RechartsTooltip
+                      contentStyle={{
+                        background: "#09090b",
+                        border: "1px solid #27272a",
+                        borderRadius: 10,
+                        fontSize: 11,
+                      }}
+                      labelStyle={{ color: "#fafafa", fontWeight: 800 }}
+                      formatter={(value: number, name: string) => {
+                        if (name === "Pace médio") return [`${formatPaceTick(value)} min/km`, name];
+                        if (name === "Tempo total") return [`${value} min`, name];
+                        return [value, name];
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: 10, color: "#a1a1aa" }} iconSize={8} />
+                    <Bar yAxisId="left" dataKey="tempo" name="Tempo total" fill="#3f3f46" radius={[4, 4, 0, 0]} />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="pace"
+                      name="Pace médio"
+                      stroke="#4ade80"
+                      strokeWidth={2.5}
+                      dot={{ r: 3, fill: "#4ade80" }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-[10px] text-zinc-600 font-bold italic text-center">
+                    Salve corridas para ver a evolução do seu pace e tempo ao longo da semana.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Corridas da Semana</p>
             <p className="text-[10px] font-black text-[#4ade80] uppercase tracking-[0.2em]">{weeklyRuns.length} {weeklyRuns.length === 1 ? "treino" : "treinos"}</p>
