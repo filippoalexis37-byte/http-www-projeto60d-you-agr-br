@@ -497,7 +497,7 @@ export default function Running() {
       </div>
 
       {/* Main Stats */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-40 overflow-y-auto custom-scrollbar">
         <div className="text-center">
           <motion.div
             key={distance}
