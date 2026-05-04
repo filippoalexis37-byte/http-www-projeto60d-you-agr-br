@@ -497,7 +497,7 @@ export default function Running() {
       </div>
 
       {/* Main Stats */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-40 overflow-y-auto custom-scrollbar">
         <div className="text-center">
           <motion.div
             key={distance}
@@ -662,7 +662,7 @@ export default function Running() {
       </div>
 
       {/* Controls */}
-      <div className="relative z-20 pb-16 px-10 flex items-center justify-between">
+      <div className="absolute bottom-0 left-0 right-0 z-20 pb-10 pt-6 px-10 flex items-center justify-between bg-gradient-to-t from-black via-black/90 to-transparent">
         <button className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
           <Music className="w-6 h-6" />
         </button>
