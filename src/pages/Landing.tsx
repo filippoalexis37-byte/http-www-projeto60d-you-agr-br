@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-fitness-couple.jpg";
+import gymBg from "@/assets/hero-gym-bg.jpg";
 
 const benefits = [
   { icon: Dumbbell, title: "Treinos Progressivos", text: "Do iniciante ao avançado, com vídeos de cada exercício" },
@@ -147,11 +148,18 @@ const Landing = () => {
       {/* Hero */}
       <div className="relative min-h-screen overflow-hidden">
         <img
-          src={heroImage}
-          alt="Transformação corporal em 60 dias"
+          src={gymBg}
+          alt="Academia com pesos, barras, kettlebells e cordas"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/40" />
+        <div className="absolute inset-0 bg-background/70" />
+        <img
+          src={heroImage}
+          alt="Transformação corporal em 60 dias para homens e mulheres"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-60 mix-blend-luminosity"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_85%)]" />
 
         <div className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center">
           <motion.div
