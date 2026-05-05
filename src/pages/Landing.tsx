@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import heroImage from "@/assets/hero-fitness.jpg";
+import heroImage from "@/assets/hero-fitness-couple.jpg";
 
 const benefits = [
   { icon: Dumbbell, title: "Treinos Progressivos", text: "Do iniciante ao avançado, com vídeos de cada exercício" },
@@ -175,7 +175,7 @@ const Landing = () => {
               PROJETO <span className="text-primary text-glow">60D</span>
             </h1>
             <p className="mt-1 font-display text-2xl tracking-widest text-secondary-foreground sm:text-3xl">
-              TRANSFORMAÇÃO REAL
+              TRANSFORMAÇÃO REAL · HOMENS & MULHERES
             </p>
             <p className="mx-auto mt-6 max-w-lg text-lg font-light leading-relaxed text-muted-foreground">
               O programa completo de <strong className="text-foreground">treino, dieta e mentalidade</strong> que já
